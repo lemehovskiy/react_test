@@ -21,53 +21,70 @@ class App extends PureComponent {
             isLoaded: false,
             isIpLoaded: false,
             ip: null,
-            location: {}
+            location: {},
+            my_shop: null
         };
+
+        this.storageKey = 'pedegoMyStore';
     }
 
 
     componentDidMount() {
 
-        fetch("https://json.geoiplookup.io/api")
-            .then(res => res.json())
-            .then(
-                (result) => {
-                    this.setState({
-                        isIpLoaded: true,
-                        ip: result.ip
-                    });
+        if (this.getStorageLocation() === null) {
 
-                    const {ip} = this.state;
+            fetch("https://json.geoiplookup.io/api")
+                .then(res => res.json())
+                .then(
+                    (result) => {
+                        this.setState({
+                            isIpLoaded: true,
+                            ip: result.ip
+                        });
 
-                    fetch("http://api.ipstack.com/" + ip + "?access_key=7d397b1c07df95585a1bb05dd8ba894e")
-                        .then(res => res.json())
-                        .then(
-                            (result) => {
-                                this.setState({
-                                    isLoaded: true,
-                                    location: {latitude: result.latitude, longitude: result.longitude}
+                        const {ip} = this.state;
 
-                                });
-                            },
-                            // Note: it's important to handle errors here
-                            // instead of a catch() block so that we don't swallow
-                            // exceptions from actual bugs in components.
-                            (error) => {
-                                this.setState({
-                                    isLoaded: true,
-                                    error
-                                });
-                            }
-                        )
-                },
+                        fetch("http://api.ipstack.com/" + ip + "?access_key=7d397b1c07df95585a1bb05dd8ba894e")
+                            .then(res => res.json())
+                            .then(
+                                (result) => {
+                                    this.setState({
+                                        isLoaded: true,
+                                        location: {latitude: result.latitude, longitude: result.longitude}
+                                    });
 
-                (error) => {
-                    this.setState({
-                        isIpLoaded: true,
-                        error
-                    });
-                }
-            )
+                                    sessionStorage.setItem(this.storageKey, JSON.stringify(this.state.location));
+
+                                },
+                                // Note: it's important to handle errors here
+                                // instead of a catch() block so that we don't swallow
+                                // exceptions from actual bugs in components.
+                                (error) => {
+                                    this.setState({
+                                        isLoaded: true,
+                                        error
+                                    });
+                                }
+                            )
+                    },
+
+                    (error) => {
+                        this.setState({
+                            isIpLoaded: true,
+                            error
+                        });
+                    }
+                )
+        }
+
+        else {
+            let location = this.getStorageLocation();
+
+            this.setState({
+                isLoaded: true,
+                location: {latitude: location.latitude, longitude: location.longitude}
+            });
+        }
     }
 
 
@@ -91,10 +108,8 @@ class App extends PureComponent {
                         Your location: {location.latitude} {location.longitude}
                     </p>
 
-                    <p>
-                        My shop:
-                        <MyShop shops={this.getNearestShops(shops, 1)}/>
-                    </p>
+                    My shop:
+                    <MyShop shops={this.getNearestShops(shops, 1)}/>
 
                     Nearest shops:
                     <ShopList shops={this.getNearestShops(shops, 4)}/>
@@ -118,6 +133,10 @@ class App extends PureComponent {
         })
 
         return _.sortBy(sortedShops, ['distance']).slice(0, num);
+    }
+
+    getStorageLocation() {
+        return JSON.parse(sessionStorage.getItem(this.storageKey));
     }
 
 }
