@@ -1,5 +1,6 @@
 import React, {Component, PureComponent} from 'react'
 import ShopList from './ShopList/'
+import MyShop from './MyShop'
 import shops from '../shops'
 import "bootstrap/dist/css/bootstrap.css"
 import {getDistanceFromLatLon} from './GetDistanceFromLatLon';
@@ -85,15 +86,22 @@ class App extends PureComponent {
                     <p>
                         Your ip: {ip}
                     </p>
+
                     <p>
                         Your location: {location.latitude} {location.longitude}
                     </p>
 
                     <p>
-                        Your shop: <ShopList shops={this.getNearestShops(shops, 1)}/>
+                        My shop:
+                        <MyShop shops={this.getNearestShops(shops, 1)}/>
                     </p>
 
+                    Nearest shops:
+                    <ShopList shops={this.getNearestShops(shops, 4)}/>
+
                 </div>
+
+
             );
         }
     }

@@ -21,6 +21,5 @@ export function getDistanceFromLatLon (lat1, lon1, lat2, lon2, units){
 
     d = _.round(d, 1); // Round
 
-    console.log(d);
     return d;
 }
