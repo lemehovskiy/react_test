@@ -7,10 +7,8 @@ class Shop extends PureComponent {
         const {shop} = this.props;
 
         return (
-            <div className="shop">
-                <h2>
+            <div>
                     {shop.title}
-                </h2>
             </div>
         )
     }

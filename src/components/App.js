@@ -2,6 +2,10 @@ import React, {Component, PureComponent} from 'react'
 import ShopList from './ShopList/'
 import shops from '../shops'
 import "bootstrap/dist/css/bootstrap.css"
+import {getDistanceFromLatLon} from './GetDistanceFromLatLon';
+
+const _ = require('lodash');
+
 
 class App extends PureComponent {
 
@@ -14,28 +18,51 @@ class App extends PureComponent {
         this.state = {
             error: null,
             isLoaded: false,
+            isIpLoaded: false,
+            ip: null,
             location: {}
         };
     }
 
 
     componentDidMount() {
-        fetch("http://api.ipstack.com/78.137.6.109?access_key=7d397b1c07df95585a1bb05dd8ba894e")
+
+        fetch("https://json.geoiplookup.io/api")
             .then(res => res.json())
             .then(
                 (result) => {
                     this.setState({
-                        isLoaded: true,
-                        location: {latitude: result.latitude, longitude: result.longitude}
-
+                        isIpLoaded: true,
+                        ip: result.ip
                     });
+
+                    const {ip} = this.state;
+
+                    fetch("http://api.ipstack.com/" + ip + "?access_key=7d397b1c07df95585a1bb05dd8ba894e")
+                        .then(res => res.json())
+                        .then(
+                            (result) => {
+                                this.setState({
+                                    isLoaded: true,
+                                    location: {latitude: result.latitude, longitude: result.longitude}
+
+                                });
+                            },
+                            // Note: it's important to handle errors here
+                            // instead of a catch() block so that we don't swallow
+                            // exceptions from actual bugs in components.
+                            (error) => {
+                                this.setState({
+                                    isLoaded: true,
+                                    error
+                                });
+                            }
+                        )
                 },
-                // Note: it's important to handle errors here
-                // instead of a catch() block so that we don't swallow
-                // exceptions from actual bugs in components.
+
                 (error) => {
                     this.setState({
-                        isLoaded: true,
+                        isIpLoaded: true,
                         error
                     });
                 }
@@ -44,30 +71,46 @@ class App extends PureComponent {
 
 
     render() {
-        const {error, isLoaded, location} = this.state;
+        const {error, isLoaded, isIpLoaded, ip, location} = this.state;
+
         if (error) {
             return <div>Error: {error.message}</div>;
-        } else if (!isLoaded) {
+        } else if (!isLoaded && !isIpLoaded) {
             return <div>Loading...</div>;
         } else {
+
             return (
+
                 <div>
-                    <ul>
-                        {location.latitude} {location.longitude}
-                    </ul>
-                    <ShopList shops={shops}/>
+                    <p>
+                        Your ip: {ip}
+                    </p>
+                    <p>
+                        Your location: {location.latitude} {location.longitude}
+                    </p>
+
+                    <p>
+                        Your shop: <ShopList shops={this.getNearestShops(shops, 1)}/>
+                    </p>
+
                 </div>
             );
         }
     }
 
-    // revert = () => {
-    //     this.articles.reverse();
-    //
-    //     this.setState({
-    //         reverted: !this.state.reverted
-    //     })
-    // }
+
+    getNearestShops = (shops, num) => {
+
+        const {location} = this.state;
+
+        let sortedShops = shops;
+
+        sortedShops.forEach(function (shop) {
+            shop.distance = getDistanceFromLatLon(location.latitude, location.longitude, shop.lat, shop.lng);
+        })
+
+        return _.sortBy(sortedShops, ['distance']).slice(0, num);
+    }
 
 }
 
