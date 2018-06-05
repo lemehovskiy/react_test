@@ -6,7 +6,7 @@ export default class MyShop extends PureComponent {
 
         return (
             <div>
-                {this.props.shops[0].title}
+                {this.props.shop.title}
             </div>
         );
     }

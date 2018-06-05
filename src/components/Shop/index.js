@@ -11,6 +11,7 @@ class Shop extends PureComponent {
         return (
             <div>
                 {shop.title}
+                <p>{shop.distance}</p>
 
                 <button onClick={onButtonClick}>Make this my store</button>
             </div>

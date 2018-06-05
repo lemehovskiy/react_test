@@ -5,8 +5,11 @@ import Shop from "../Shop/"
 export default class ShopList extends PureComponent {
 
 
-    state = {
-        openShopId: null
+    constructor(props) {
+        super(props);
+        this.state = {
+            openShopId: null
+        }
     }
 
     render() {
@@ -30,7 +33,9 @@ export default class ShopList extends PureComponent {
         )
     }
 
-    handleClick = openShopId => this.setState({
-        openShopId: this.state.openShopId === openShopId ? null : openShopId
-    })
+    handleClick(openShopId){
+        this.setState({
+            openShopId: this.state.openShopId === openShopId ? null : openShopId
+        })
+    }
 }
