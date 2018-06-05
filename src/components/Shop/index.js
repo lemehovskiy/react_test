@@ -6,14 +6,14 @@ class Shop extends PureComponent {
 
 
     render() {
-        const {shop, onButtonClick} = this.props;
+        const {shop, onMakeMyStoreClick} = this.props;
 
         return (
             <div>
                 {shop.title}
                 <p>{shop.distance}</p>
 
-                <button onClick={onButtonClick}>Make this my store</button>
+                <button onClick={onMakeMyStoreClick}>Make this my store</button>
             </div>
         )
     }

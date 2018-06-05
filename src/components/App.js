@@ -93,7 +93,7 @@ class App extends PureComponent {
 
             this.setShopDistance();
             this.sortShopByDistance();
-            this.setMyStore(this.state.shops[0]);
+            this.setMyStore(this.state.shops[0].id);
 
             this.setState({
                 dataLoaded: true
@@ -165,7 +165,11 @@ class App extends PureComponent {
                     <MyShop shop={this.state.myStore}/>
 
                     Nearest shops:
-                    <ShopList shops={this.state.shops}/>
+                    <ShopList
+                        shops={this.state.shops}
+                        onMakeMyStoreClick={this.onMakeMyStoreClick.bind(this)}
+
+                    />
 
                 </div>
 
@@ -175,9 +179,24 @@ class App extends PureComponent {
     }
 
 
-    setMyStore(store) {
+    setMyStore(storeID) {
 
-        this.state.myStore = store;
+        let self = this;
+
+        this.state.shops.forEach(function(store){
+            if (store.id === storeID) {
+                self.setState({
+                    myStore: store
+                })
+            }
+        })
+    }
+
+    onMakeMyStoreClick(storeID){
+
+        console.log(storeID);
+        this.setMyStore(storeID);
+        this.pushToStorage();
     }
 
     setShopDistance() {
