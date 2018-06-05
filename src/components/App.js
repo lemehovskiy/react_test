@@ -23,7 +23,7 @@ class App extends PureComponent {
             dataLoaded: false,
             ip: null,
             location: {},
-            my_shop: null,
+            myStore: null,
             shops: []
         };
 
@@ -63,7 +63,6 @@ class App extends PureComponent {
                                     this.setUserLocation({latitude: result.latitude, longitude: result.longitude});
 
                                     return result;
-                                    // this.setNearestShops();
                                 },
                                 // Note: it's important to handle errors here
                                 // instead of a catch() block so that we don't swallow
@@ -87,12 +86,7 @@ class App extends PureComponent {
         }
 
         else {
-            let location = this.getStorageData();
-
-            this.setState({
-                location: {latitude: location.latitude, longitude: location.longitude}
-            });
-
+            this.pullFromStorage();
         }
 
         Promise.all(promiseArr).then(values => {
@@ -114,19 +108,27 @@ class App extends PureComponent {
 
     }
 
-    pushToStorage(){
+    pullFromStorage() {
+        let storageData = this.getStorageData();
 
-        let storageData = {
-            location: this.state.location,
-            my_shop: this.my_shop
-        }
-
-        sessionStorage.setItem(this.storageKey, JSON.stringify(this.state.location));
+        this.setState({
+            location: storageData.location,
+            myStore: storageData.myStore
+        });
     }
 
-    setUserLocation(location){
+    pushToStorage() {
+        let storageData = {
+            location: this.state.location,
+            myStore: this.state.myStore
+        }
+
+        sessionStorage.setItem(this.storageKey, JSON.stringify(storageData));
+    }
+
+    setUserLocation(location) {
         this.setState({
-            location: {latitude: location.latitude, longitude: result.longitude}
+            location: {latitude: location.latitude, longitude: location.longitude}
         });
     }
 
@@ -151,16 +153,16 @@ class App extends PureComponent {
 
                 <div>
                     <p>
-                    Your ip: {ip}
+                        Your ip: {ip}
                     </p>
 
                     <p>
-                    Your location: {location.latitude} {location.longitude}
+                        Your location: {location.latitude} {location.longitude}
                     </p>
 
                     My shop:
 
-                    <MyShop shop={this.state.my_shop}/>
+                    <MyShop shop={this.state.myStore}/>
 
                     Nearest shops:
                     <ShopList shops={this.state.shops}/>
@@ -173,10 +175,9 @@ class App extends PureComponent {
     }
 
 
+    setMyStore(store) {
 
-    setMyStore(store){
-
-        this.state.my_shop = store;
+        this.state.myStore = store;
     }
 
     setShopDistance() {
@@ -187,7 +188,7 @@ class App extends PureComponent {
         })
     }
 
-    sortShopByDistance(){
+    sortShopByDistance() {
         this.state.shops = _.sortBy(this.state.shops, ['distance'])
     }
 
