@@ -37,7 +37,8 @@ export default class ShopList extends PureComponent {
 
         this.props.onMakeMyStoreClick(openShopId);
 
-        console.log('hand');
+        // console.log('handleClick');
+
         this.setState({
             openShopId: openShopId
             // openShopId: this.state.openShopId === openShopId ? null : openShopId

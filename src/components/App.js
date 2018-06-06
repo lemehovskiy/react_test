@@ -17,9 +17,6 @@ class App extends PureComponent {
         super(props);
         this.state = {
             error: null,
-            isLocationLoaded: false,
-            isIpLoaded: false,
-            isStoresLoaded: false,
             dataLoaded: false,
             ip: null,
             location: {},
@@ -70,7 +67,6 @@ class App extends PureComponent {
                                 // exceptions from actual bugs in components.
                                 (error) => {
                                     this.setState({
-                                        isLocationLoaded: true,
                                         error
                                     });
                                 }
@@ -94,16 +90,16 @@ class App extends PureComponent {
 
             this.setShopDistance();
             this.sortShopByDistance();
-            this.setMyStore(this.state.shops[0].id);
+
+            if (!this.state.userForceCheckStore) {
+                this.setMyStore(this.state.shops[0].id);
+            }
 
             this.setState({
                 dataLoaded: true
             })
 
             this.pushToStorage();
-            // console.log(values);
-
-            // console.log(this.state.shops);
         });
 
 
@@ -135,12 +131,52 @@ class App extends PureComponent {
         });
     }
 
-    setNearestShops() {
-        this.state.nearest_shops = this.getNearestShops(shops);
+    setMyStore(storeID) {
+        let self = this;
 
-        // console.log('asdf');
+        this.state.shops.forEach(function(store){
+            if (store.id === storeID) {
+                self.setState({
+                    myStore: store
+                }, () => self.pushToStorage());
+            }
+        })
+    }
 
-        console.log(this.state.nearest_shops);
+    onMakeMyStoreClick(storeID){
+
+        this.state.userForceCheckStore = true;
+        this.setMyStore(storeID);
+    }
+
+    setShopDistance() {
+        const {location, shops} = this.state;
+
+        shops.forEach(function (shop) {
+            shop.distance = getDistanceFromLatLon(location.latitude, location.longitude, shop.lat, shop.lng);
+        })
+    }
+
+    sortShopByDistance() {
+        this.state.shops = _.sortBy(this.state.shops, ['distance'])
+    }
+
+
+    getNearestShops(shops, num) {
+
+        const {location} = this.state;
+
+        let sortedShops = shops;
+
+        sortedShops.forEach(function (shop) {
+            shop.distance = getDistanceFromLatLon(location.latitude, location.longitude, shop.lat, shop.lng);
+        })
+
+        return _.sortBy(sortedShops, ['distance']);
+    }
+
+    getStorageData() {
+        return JSON.parse(sessionStorage.getItem(this.storageKey));
     }
 
     render() {
@@ -180,60 +216,6 @@ class App extends PureComponent {
 
             );
         }
-    }
-
-
-    setMyStore(storeID) {
-
-        let self = this;
-
-        this.state.shops.forEach(function(store){
-            if (store.id === storeID) {
-                self.setState({
-                    myStore: store
-                })
-            }
-        })
-    }
-
-    onMakeMyStoreClick(storeID){
-        console.log(storeID);
-        this.setMyStore(storeID);
-        this.pushToStorage();
-    }
-
-    setShopDistance() {
-        const {location, shops} = this.state;
-
-        shops.forEach(function (shop) {
-            shop.distance = getDistanceFromLatLon(location.latitude, location.longitude, shop.lat, shop.lng);
-        })
-    }
-
-    sortShopByDistance() {
-        this.state.shops = _.sortBy(this.state.shops, ['distance'])
-    }
-
-
-    getNearestShops(shops, num) {
-
-        const {location} = this.state;
-
-        let sortedShops = shops;
-
-        console.log(sortedShops);
-
-        sortedShops.forEach(function (shop) {
-            shop.distance = getDistanceFromLatLon(location.latitude, location.longitude, shop.lat, shop.lng);
-        })
-
-        console.log(_.sortBy(sortedShops, ['distance']));
-
-        return _.sortBy(sortedShops, ['distance']);
-    }
-
-    getStorageData() {
-        return JSON.parse(sessionStorage.getItem(this.storageKey));
     }
 
 }
