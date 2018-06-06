@@ -3,6 +3,7 @@ import ShopList from './ShopList/'
 import MyShop from './MyShop'
 import shops from '../shops'
 import {getDistanceFromLatLon} from './GetDistanceFromLatLon';
+import Select from "react-select";
 
 const _ = require('lodash');
 
@@ -22,10 +23,76 @@ class App extends PureComponent {
             location: {},
             myStore: null,
             shops: [],
-            userForceCheckStore: false
+            filteredStores: [],
+            userForceCheckStore: false,
+            filters: [
+                {
+                    name: 'distance',
+                    val: null
+                },
+                {
+                    name: 'storeType',
+                    val: null
+                }
+            ]
         };
 
         this.storageKey = 'pedegoMyStore';
+    }
+
+    handleFilterChange(filterName) {
+
+        let self = this;
+
+        let currentFilters = this.state.filters,
+            filteredStores = this.state.shops;
+
+        return function (filterVal) {
+            currentFilters.forEach(function(filter){
+                if (filter.name === filterName) {
+                    filter.val = filterVal.value;
+
+                    self.setState({
+                        filters: currentFilters
+                    }, function(){
+                        console.log(this.state)
+                    })
+                }
+            })
+
+
+            this.state.filters.forEach(function(filter){
+                if (filter.val === null || filter.val === -1) return;
+
+                if (filter.name === 'distance') {
+                    filteredStores = _.filter(filteredStores, function(item) {return item.distance < filter.val})
+                }
+
+                else if (filter.name === 'storeType') {
+                    filteredStores = _.filter(filteredStores, function(item) {return item.storeTypeID === filter.val})
+                }
+            })
+
+            self.setState({
+                filteredStores: filteredStores
+            })
+
+        }.bind(this);
+
+
+
+        // console.log(distanceFilterVal);
+        //
+        // let filters = this.state.filters;
+        //
+        // filters.distance = distanceFilterVal;
+        //
+        // this.setState(filters);
+        //
+        // // selectedOption can be null when the `x` (close) button is clicked
+        // if (distanceFilterVal) {
+        //     console.log(`Selected: ${distanceFilterVal.label}`);
+        // }
     }
 
     componentDidMount() {
@@ -90,6 +157,7 @@ class App extends PureComponent {
 
             this.setShopDistance();
             this.sortShopByDistance();
+            this.initFilteredShops();
 
             if (!this.state.userForceCheckStore) {
                 this.setMyStore(this.state.shops[0].id);
@@ -101,8 +169,31 @@ class App extends PureComponent {
 
             this.pushToStorage();
         });
+    }
 
+    initFilteredShops() {
 
+        let self = this;
+
+        // let filteredStores = this.state.shops;
+
+        // console.log(this.state);
+
+        // for(let filter in this.state.filters) {
+        //
+        //     if (filter === 'distance') {
+        //         filteredStores = _.filter(filteredStores, function(item) {return item.distance < self.state.filters[filter].val})
+        //     }
+        // }
+
+        // this.state.filters.forEach(function (filter) {
+        //     console.log(filter)
+        // })
+        // filteredStores = _.filter(filteredStores)
+
+        this.setState({
+            filteredStores: this.state.shops
+        })
     }
 
     pullFromStorage() {
@@ -134,7 +225,7 @@ class App extends PureComponent {
     setMyStore(storeID) {
         let self = this;
 
-        this.state.shops.forEach(function(store){
+        this.state.shops.forEach(function (store) {
             if (store.id === storeID) {
                 self.setState({
                     myStore: store
@@ -143,7 +234,7 @@ class App extends PureComponent {
         })
     }
 
-    onMakeMyStoreClick(storeID){
+    onMakeMyStoreClick(storeID) {
 
         this.state.userForceCheckStore = true;
         this.setMyStore(storeID);
@@ -162,25 +253,12 @@ class App extends PureComponent {
     }
 
 
-    getNearestShops(shops, num) {
-
-        const {location} = this.state;
-
-        let sortedShops = shops;
-
-        sortedShops.forEach(function (shop) {
-            shop.distance = getDistanceFromLatLon(location.latitude, location.longitude, shop.lat, shop.lng);
-        })
-
-        return _.sortBy(sortedShops, ['distance']);
-    }
-
     getStorageData() {
         return JSON.parse(sessionStorage.getItem(this.storageKey));
     }
 
     render() {
-        const {error, dataLoaded, ip, location, nearest_shops} = this.state;
+        const {error, dataLoaded, ip, location, distanceFilterVal} = this.state;
 
         if (error) {
             return <div>Error: {error.message}</div>;
@@ -205,10 +283,31 @@ class App extends PureComponent {
 
                     Nearest store:
                     <ShopList
-                        shops={this.state.shops}
+                        shops={this.state.filteredStores}
                         activeStoreID={this.state.myStore.id}
                         onMakeMyStoreClick={this.onMakeMyStoreClick.bind(this)}
 
+                    />
+
+                    <Select
+                        name="distance-filter"
+                        onChange={this.handleFilterChange('distance').bind(this)}
+                        options={[
+                            {value: -1, label: "All Stores"},
+                            {value: 1, label: 1},
+                            {value: 5, label: 5},
+                            {value: 10, label: 10}
+                        ]}
+                    />
+
+                    <Select
+                        name="store-type-filter"
+                        onChange={this.handleFilterChange('storeType').bind(this)}
+                        options={[
+                            {value: -1, label: "All Stores"},
+                            {value: 0, label: "Pedego Stores"},
+                            {value: 1, label: "Independent Stores"}
+                        ]}
                     />
 
                 </div>

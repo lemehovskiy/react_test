@@ -12,6 +12,7 @@ class Shop extends PureComponent {
             <div>
                 {shop.title}
                 <p>{shop.distance}</p>
+                <p>Store type:</p>{shop.storeTypeID === 0 ? 'Pedego Store' : 'Independent Store'}
 
                 <button onClick={onMakeMyStoreClick}>Make this my store</button>
             </div>
