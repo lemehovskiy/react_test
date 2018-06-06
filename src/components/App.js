@@ -24,7 +24,8 @@ class App extends PureComponent {
             ip: null,
             location: {},
             myStore: null,
-            shops: []
+            shops: [],
+            userForceCheckStore: false
         };
 
         this.storageKey = 'pedegoMyStore';
@@ -113,14 +114,16 @@ class App extends PureComponent {
 
         this.setState({
             location: storageData.location,
-            myStore: storageData.myStore
+            myStore: storageData.myStore,
+            userForceCheckStore: storageData.userForceCheckStore
         });
     }
 
     pushToStorage() {
         let storageData = {
             location: this.state.location,
-            myStore: this.state.myStore
+            myStore: this.state.myStore,
+            userForceCheckStore: this.state.userForceCheckStore
         }
 
         sessionStorage.setItem(this.storageKey, JSON.stringify(storageData));
@@ -160,13 +163,14 @@ class App extends PureComponent {
                         Your location: {location.latitude} {location.longitude}
                     </p>
 
-                    My shop:
+                    My store:
 
                     <MyShop shop={this.state.myStore}/>
 
-                    Nearest shops:
+                    Nearest store:
                     <ShopList
                         shops={this.state.shops}
+                        activeStoreID={this.state.myStore.id}
                         onMakeMyStoreClick={this.onMakeMyStoreClick.bind(this)}
 
                     />
@@ -193,7 +197,6 @@ class App extends PureComponent {
     }
 
     onMakeMyStoreClick(storeID){
-
         console.log(storeID);
         this.setMyStore(storeID);
         this.pushToStorage();

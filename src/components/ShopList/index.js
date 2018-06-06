@@ -8,7 +8,7 @@ export default class ShopList extends PureComponent {
     constructor(props) {
         super(props);
         this.state = {
-            openShopId: null
+            openShopId: props.activeStoreID
         }
     }
 
@@ -31,11 +31,16 @@ export default class ShopList extends PureComponent {
 
     handleClick(openShopId) {
 
+        if (this.state.openShopId === openShopId) {
+            return;
+        }
+
         this.props.onMakeMyStoreClick(openShopId);
 
         console.log('hand');
         this.setState({
-            openShopId: this.state.openShopId === openShopId ? null : openShopId
+            openShopId: openShopId
+            // openShopId: this.state.openShopId === openShopId ? null : openShopId
         })
     }
 }
