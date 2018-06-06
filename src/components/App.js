@@ -242,6 +242,8 @@ class App extends PureComponent {
             return (
 
                 <div>
+                    <GoogleMap isMarkerShown stores={this.state.filteredStores}/>
+
                     <p>
                         Your ip: {ip}
                     </p>
@@ -282,8 +284,6 @@ class App extends PureComponent {
                             {value: 1, label: "Independent Stores"}
                         ]}
                     />
-
-                    <GoogleMap isMarkerShown/>
 
                 </div>
 

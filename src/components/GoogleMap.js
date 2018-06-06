@@ -1,6 +1,5 @@
-import _ from "lodash";
 import React from "react";
-import { compose, withProps } from "recompose";
+import { compose, withProps ,lifecycle} from "recompose";
 import {
     withScriptjs,
     withGoogleMap,
@@ -17,17 +16,35 @@ const MyMapComponent = compose(
         mapElement: <div style={{ height: `100%` }} />
     }),
     withScriptjs,
-    withGoogleMap
+    withGoogleMap,
+    lifecycle({
+        componentWillMount() {
+
+            this.setState({
+
+                zoomToMarkers: map => {
+                    //console.log("Zoom to markers");
+                    const bounds = new window.google.maps.LatLngBounds();
+                    map.props.children.forEach((child) => {
+                        if (child.type === Marker) {
+                            bounds.extend(new window.google.maps.LatLng(child.props.position.lat, child.props.position.lng));
+                        }
+                    })
+                    map.fitBounds(bounds);
+                }
+            })
+        },
+    }),
 )(props => (
-    <GoogleMap defaultZoom={8} defaultCenter={{ lat: -34.397, lng: 150.644 }}>
+    <GoogleMap ref={props.zoomToMarkers} defaultZoom={8} defaultCenter={{ lat: -34.397, lng: 150.644 }}>
         <Marker position={{ lat: -34.397, lng: 150.644 }} />
+        <Marker position={{ lat: 49.430647, lng: 32.065539 }} />
     </GoogleMap>
 ));
 
-const enhance = _.identity;
 
 const ReactGoogleMaps = () => [
     <MyMapComponent key="map" />
 ];
 
-export default enhance(ReactGoogleMaps);
+export default ReactGoogleMaps;
