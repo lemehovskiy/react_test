@@ -79,20 +79,6 @@ class App extends PureComponent {
 
         }.bind(this);
 
-
-
-        // console.log(distanceFilterVal);
-        //
-        // let filters = this.state.filters;
-        //
-        // filters.distance = distanceFilterVal;
-        //
-        // this.setState(filters);
-        //
-        // // selectedOption can be null when the `x` (close) button is clicked
-        // if (distanceFilterVal) {
-        //     console.log(`Selected: ${distanceFilterVal.label}`);
-        // }
     }
 
     componentDidMount() {
@@ -172,25 +158,6 @@ class App extends PureComponent {
     }
 
     initFilteredShops() {
-
-        let self = this;
-
-        // let filteredStores = this.state.shops;
-
-        // console.log(this.state);
-
-        // for(let filter in this.state.filters) {
-        //
-        //     if (filter === 'distance') {
-        //         filteredStores = _.filter(filteredStores, function(item) {return item.distance < self.state.filters[filter].val})
-        //     }
-        // }
-
-        // this.state.filters.forEach(function (filter) {
-        //     console.log(filter)
-        // })
-        // filteredStores = _.filter(filteredStores)
-
         this.setState({
             filteredStores: this.state.shops
         })
