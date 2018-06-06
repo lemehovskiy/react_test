@@ -4,6 +4,7 @@ import MyShop from './MyShop'
 import shops from '../shops'
 import {getDistanceFromLatLon} from './GetDistanceFromLatLon';
 import Select from "react-select";
+import GoogleMap from './GoogleMap';
 
 const _ = require('lodash');
 
@@ -48,28 +49,32 @@ class App extends PureComponent {
             filteredStores = this.state.shops;
 
         return function (filterVal) {
-            currentFilters.forEach(function(filter){
+            currentFilters.forEach(function (filter) {
                 if (filter.name === filterName) {
                     filter.val = filterVal.value;
 
                     self.setState({
                         filters: currentFilters
-                    }, function(){
+                    }, function () {
                         console.log(this.state)
                     })
                 }
             })
 
 
-            this.state.filters.forEach(function(filter){
+            this.state.filters.forEach(function (filter) {
                 if (filter.val === null || filter.val === -1) return;
 
                 if (filter.name === 'distance') {
-                    filteredStores = _.filter(filteredStores, function(item) {return item.distance < filter.val})
+                    filteredStores = _.filter(filteredStores, function (item) {
+                        return item.distance < filter.val
+                    })
                 }
 
                 else if (filter.name === 'storeType') {
-                    filteredStores = _.filter(filteredStores, function(item) {return item.storeTypeID === filter.val})
+                    filteredStores = _.filter(filteredStores, function (item) {
+                        return item.storeTypeID === filter.val
+                    })
                 }
             })
 
@@ -158,6 +163,7 @@ class App extends PureComponent {
     }
 
     initFilteredShops() {
+
         this.setState({
             filteredStores: this.state.shops
         })
@@ -276,6 +282,8 @@ class App extends PureComponent {
                             {value: 1, label: "Independent Stores"}
                         ]}
                     />
+
+                    <GoogleMap isMarkerShown/>
 
                 </div>
 

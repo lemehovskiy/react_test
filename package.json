@@ -17,7 +17,6 @@
     "react": "^16.3.2",
     "react-dom": "^16.3.2",
     "react-scripts": "1.1.4",
-    "react-select": "^1.2.1",
     "resolve-url-loader": "^2.2.1",
     "sass-loader": "^6.0.6",
     "style-loader": "^0.19.1",
@@ -28,5 +27,10 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "NODE_ENV=development webpack",
     "build": "NODE_ENV=production webpack"
+  },
+  "devDependencies": {
+    "react-google-maps": "^9.4.5",
+    "react-select": "^1.2.1",
+    "recompose": "^0.27.1"
   }
 }
