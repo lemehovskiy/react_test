@@ -8,13 +8,13 @@ export default class StoreList extends PureComponent {
     constructor(props) {
         super(props);
         this.state = {
-            openShopId: props.activeStoreID
+            openStoreId: props.activeStoreID
         }
     }
 
     render() {
         const storesElement = this.props.stores.map((store, index) =>
-            <li key={store.id} className={store.id === this.state.openShopId ? 'active' : ' '}>
+            <li key={store.id} className={store.id === this.state.openStoreId ? 'active' : ' '}>
                 <Store
                     store={store}
                     onMakeMyStoreClick={this.handleClick.bind(this, store.id)}
