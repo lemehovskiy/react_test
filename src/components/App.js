@@ -4,7 +4,7 @@ import MyShop from './MyShop'
 import shops from '../shops'
 import {getDistanceFromLatLon} from './GetDistanceFromLatLon';
 import Select from "react-select";
-import GoogleMap from './GoogleMap';
+import MapWithAMarker from './GoogleMap';
 
 const _ = require('lodash');
 
@@ -242,7 +242,7 @@ class App extends PureComponent {
             return (
 
                 <div>
-                    <GoogleMap isMarkerShown stores={this.state.filteredStores}/>
+                    <MapWithAMarker isMarkerShown={true} stores={this.state.filteredStores}/>
 
                     <p>
                         Your ip: {ip}
