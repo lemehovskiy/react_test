@@ -1,7 +1,7 @@
 import React, {Component, PureComponent} from 'react'
-import ShopList from './ShopList/'
-import MyShop from './MyShop'
-import shops from '../shops'
+import StoreList from './StoreList/'
+import MyStore from './MyStore'
+import stores from '../stores'
 import {getDistanceFromLatLon} from './GetDistanceFromLatLon';
 import Select from "react-select";
 import MapWithAMarker from './GoogleMap';
@@ -12,10 +12,6 @@ const _ = require('lodash');
 
 class App extends PureComponent {
 
-    // state = {
-    //     reverted: false
-    // }
-
     constructor(props) {
         super(props);
         this.state = {
@@ -25,7 +21,7 @@ class App extends PureComponent {
             location: {},
             myStore: null,
             searchVal: null,
-            shops: [],
+            stores: [],
             filteredStores: [],
             userForceCheckStore: false,
             filters: [
@@ -40,7 +36,7 @@ class App extends PureComponent {
             ]
         };
 
-        this.storageKey = 'pedegoMyStore';
+        this.storageKey = 'myStore';
     }
 
     handleFilterChange(filterName) {
@@ -67,7 +63,7 @@ class App extends PureComponent {
     filterStores(){
         let self = this;
 
-        let filteredStores = this.state.shops;
+        let filteredStores = this.state.stores;
 
         this.state.filters.forEach(function (filter) {
             if (filter.val === null || filter.val === -1) return;
@@ -113,9 +109,9 @@ class App extends PureComponent {
         promiseArr.push(new Promise((resolve, reject) => {
             setTimeout(() => {
                 this.setState({
-                    shops: shops
+                    stores: stores
                 })
-                resolve("Shops loaded");
+                resolve("Stores loaded");
             }, 1000);
 
         }));
@@ -166,12 +162,12 @@ class App extends PureComponent {
 
         Promise.all(promiseArr).then(values => {
 
-            this.setShopDistance();
-            this.sortShopByDistance();
-            this.initFilteredShops();
+            this.setStoreDistance();
+            this.sortStoreByDistance();
+            this.initFilteredStores();
 
             if (!this.state.userForceCheckStore) {
-                this.setMyStore(this.state.shops[0].id);
+                this.setMyStore(this.state.stores[0].id);
             }
 
             this.setState({
@@ -182,10 +178,10 @@ class App extends PureComponent {
         });
     }
 
-    initFilteredShops() {
+    initFilteredStores() {
 
         this.setState({
-            filteredStores: this.state.shops
+            filteredStores: this.state.stores
         })
     }
 
@@ -218,7 +214,7 @@ class App extends PureComponent {
     setMyStore(storeID) {
         let self = this;
 
-        this.state.shops.forEach(function (store) {
+        this.state.stores.forEach(function (store) {
             if (store.id === storeID) {
                 self.setState({
                     myStore: store
@@ -233,16 +229,16 @@ class App extends PureComponent {
         this.setMyStore(storeID);
     }
 
-    setShopDistance() {
-        const {location, shops} = this.state;
+    setStoreDistance() {
+        const {location, store} = this.state;
 
-        shops.forEach(function (shop) {
-            shop.distance = getDistanceFromLatLon(location.latitude, location.longitude, shop.lat, shop.lng);
+        stores.forEach(function (store) {
+            store.distance = getDistanceFromLatLon(location.latitude, location.longitude, store.lat, store.lng);
         })
     }
 
-    sortShopByDistance() {
-        this.state.shops = _.sortBy(this.state.shops, ['distance'])
+    sortStoreByDistance() {
+        this.state.stores = _.sortBy(this.state.stores, ['distance'])
     }
 
 
@@ -275,7 +271,7 @@ class App extends PureComponent {
 
                     My store:
 
-                    <MyShop shop={this.state.myStore}/>
+                    <MyStore store={this.state.myStore}/>
 
                     <Search
                         handleSearchInput={this.handleSearchInput.bind(this)}/>
@@ -297,14 +293,14 @@ class App extends PureComponent {
                         onChange={this.handleFilterChange('storeType').bind(this)}
                         options={[
                             {value: -1, label: "All Stores"},
-                            {value: 0, label: "Pedego Stores"},
+                            {value: 0, label: "Dealer Stores"},
                             {value: 1, label: "Independent Stores"}
                         ]}
                     />
 
                     Nearest store:
-                    <ShopList
-                        shops={this.state.filteredStores}
+                    <StoreList
+                        stores={this.state.filteredStores}
                         activeStoreID={this.state.myStore.id}
                         onMakeMyStoreClick={this.onMakeMyStoreClick.bind(this)}
 

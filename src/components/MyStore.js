@@ -1,12 +1,12 @@
 import React, {PureComponent} from "react"
 
-export default class MyShop extends PureComponent {
+export default class MyStore extends PureComponent {
 
     render() {
 
         return (
             <div>
-                {this.props.shop.title}
+                {this.props.store.title}
             </div>
         );
     }
