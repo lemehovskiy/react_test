@@ -4,8 +4,11 @@ import MyStore from './MyStore'
 import stores from '../stores'
 import {getDistanceFromLatLon} from './GetDistanceFromLatLon';
 import Select from "react-select";
+import 'react-select/dist/react-select.css';
+
 import MapWithAMarker from './GoogleMap';
 import Search from "./Search";
+
 
 const _ = require('lodash');
 
@@ -60,7 +63,7 @@ class App extends PureComponent {
         }.bind(this);
     }
 
-    filterStores(){
+    filterStores() {
         let self = this;
 
         let filteredStores = this.state.stores;
@@ -97,7 +100,7 @@ class App extends PureComponent {
     handleSearchInput(event) {
         this.setState({
             searchVal: event.target.value
-        }, function(){
+        }, function () {
             this.filterStores();
         })
     }
@@ -261,44 +264,59 @@ class App extends PureComponent {
                 <div>
                     <MapWithAMarker isMarkerShown={true} stores={this.state.filteredStores}/>
 
-                    <p>
-                        Your ip: {ip}
-                    </p>
 
-                    <p>
-                        Your location: {location.latitude} {location.longitude}
-                    </p>
+                    <div id="find-store-debug">
 
-                    My store:
+                        <h3>
+                            Debug info
+                        </h3>
+                        <p>
+                            Your ip: {ip}
+                        </p>
 
-                    <MyStore store={this.state.myStore}/>
+                        <p>
+                            Your location: {location.latitude} {location.longitude}
+                        </p>
+
+                        <div>
+                            Your store: <MyStore store={this.state.myStore}/>
+                        </div>
+                    </div>
+
 
                     <Search
                         handleSearchInput={this.handleSearchInput.bind(this)}/>
 
 
-                    <Select
-                        name="distance-filter"
-                        onChange={this.handleFilterChange('distance').bind(this)}
-                        options={[
-                            {value: -1, label: "All Stores"},
-                            {value: 1, label: 1},
-                            {value: 5, label: 5},
-                            {value: 10, label: 10}
-                        ]}
-                    />
+                    <div className="form-row">
+                        <div className="form-group">
+                            <h3>Filter by distance</h3>
+                            <Select
+                                name="distance-filter"
+                                onChange={this.handleFilterChange('distance').bind(this)}
+                                options={[
+                                    {value: -1, label: "All Stores"},
+                                    {value: 1, label: '1 km'},
+                                    {value: 5, label: '5 km'},
+                                    {value: 10, label: '10 km'}
+                                ]}
+                            />
+                        </div>
 
-                    <Select
-                        name="store-type-filter"
-                        onChange={this.handleFilterChange('storeType').bind(this)}
-                        options={[
-                            {value: -1, label: "All Stores"},
-                            {value: 0, label: "Dealer Stores"},
-                            {value: 1, label: "Independent Stores"}
-                        ]}
-                    />
+                        <div className="form-group">
+                            <h3>Filter by store type</h3>
+                            <Select
+                                name="store-type-filter"
+                                onChange={this.handleFilterChange('storeType').bind(this)}
+                                options={[
+                                    {value: -1, label: "All Stores"},
+                                    {value: 0, label: "Dealer Stores"},
+                                    {value: 1, label: "Independent Stores"}
+                                ]}
+                            />
+                        </div>
+                    </div>
 
-                    Nearest store:
                     <StoreList
                         stores={this.state.filteredStores}
                         activeStoreID={this.state.myStore.id}

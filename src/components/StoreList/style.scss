@@ -1,0 +1,26 @@
+.nearest-stores {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    li {
+        padding: 20px;
+
+        &.active {
+            button {
+                background: rgba(255, 7, 0, 0.47);
+            }
+        }
+
+        &:nth-child(odd) {
+            background: #f3f3f3;
+        }
+
+        button {
+            padding: 4px 14px;
+            border: 1px solid black;
+            font-size: 17px;
+            text-transform: uppercase;
+        }
+    }
+}

@@ -3,6 +3,8 @@ import {render} from 'react-dom'
 
 import App from './components/App';
 
+import './style.scss'
 
 
-render(<App/>, document.getElementById('root'));
+
+render(<App/>, document.getElementById('find-store'));

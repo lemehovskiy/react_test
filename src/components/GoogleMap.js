@@ -21,7 +21,7 @@ const MapWithAMarker = compose(withScriptjs, withGoogleMap)(props => {
                         position={{ lat: store.lat, lng: store.lng }}
                         icon={{
                             path: 'M10.9,0C4.9,0,0,4.9,0,10.9c0,7,9.8,24.7,10.9,24.7c1.2,0,10.9-17.5,10.9-24.7C21.8,4.9,16.9,0,10.9,0z M10.9,15.5c-2.5,0-4.6-2-4.6-4.6s2-4.6,4.6-4.6c2.5,0,4.6,2,4.6,4.6S13.4,15.5,10.9,15.5z',
-                            fillColor: store.storeTypeID === 1 ? '#882929' : '#dddddd',
+                            fillColor: store.storeTypeID === 1 ? '#882929' : '#000000',
                             fillOpacity: 1,
                             scale: 1.1,
                             strokeWeight: 0,

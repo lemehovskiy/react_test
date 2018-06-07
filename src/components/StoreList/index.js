@@ -1,6 +1,7 @@
 import React, {PureComponent} from "react"
-import Store from "../Store/"
-// import './style.css'
+import Store from "../Store"
+import './style.scss'
+
 
 export default class StoreList extends PureComponent {
 
@@ -23,9 +24,13 @@ export default class StoreList extends PureComponent {
         )
 
         return (
-            <ul>
-                {storesElement}
-            </ul>
+            <div>
+                <h3>Nearest stores:</h3>
+
+                <ul className="nearest-stores">
+                    {storesElement}
+                </ul>
+            </div>
         )
     }
 

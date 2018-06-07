@@ -1,0 +1,37 @@
+.container {
+  max-width: 1200px;
+  margin: auto;
+}
+
+#find-store-debug {
+  position: fixed;
+  left: 0;
+  top: 0;
+  background: lightgrey;
+  padding: 20px;
+}
+
+
+#find-store {
+  font-size: 16px;
+
+  .search-row {
+    text-align: center;
+
+    input {
+      padding: 10px 5px;
+      font-size: 16px;
+    }
+  }
+
+  .form-row {
+    display: flex;
+    justify-content: center;
+  }
+
+  .form-group {
+    max-width: 300px;
+    width: 100%;
+    padding: 20px 20px 0;
+  }
+}

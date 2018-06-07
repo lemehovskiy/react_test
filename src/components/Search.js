@@ -11,7 +11,10 @@ export default class Search extends PureComponent {
         const {handleSearchInput} = this.props;
 
         return (
-            <input type="text" onChange={handleSearchInput}/>
+            <div className="search-row">
+                <h3>Find your store</h3>
+                <input type="text" onChange={handleSearchInput} placeholder="Search"/>
+            </div>
         );
     }
 }
