@@ -5,6 +5,7 @@ import shops from '../shops'
 import {getDistanceFromLatLon} from './GetDistanceFromLatLon';
 import Select from "react-select";
 import MapWithAMarker from './GoogleMap';
+import Search from "./Search";
 
 const _ = require('lodash');
 
@@ -42,6 +43,8 @@ class App extends PureComponent {
     }
 
     handleFilterChange(filterName) {
+
+        console.log(arguments);
 
         let self = this;
 
@@ -83,6 +86,10 @@ class App extends PureComponent {
             })
 
         }.bind(this);
+
+    }
+
+    filterStores(){
 
     }
 
@@ -230,6 +237,20 @@ class App extends PureComponent {
         return JSON.parse(sessionStorage.getItem(this.storageKey));
     }
 
+    handleSearchInput(event) {
+        let updatedList = this.state.filteredStores;
+
+        updatedList = updatedList.filter(function (item) {
+            // console.log(item);
+            return item.title.toLowerCase().search(
+                    event.target.value.toLowerCase()) !== -1;
+        });
+
+        this.setState({
+            filteredStores: updatedList
+        });
+    }
+
     render() {
         const {error, dataLoaded, ip, location, distanceFilterVal} = this.state;
 
@@ -256,13 +277,9 @@ class App extends PureComponent {
 
                     <MyShop shop={this.state.myStore}/>
 
-                    Nearest store:
-                    <ShopList
-                        shops={this.state.filteredStores}
-                        activeStoreID={this.state.myStore.id}
-                        onMakeMyStoreClick={this.onMakeMyStoreClick.bind(this)}
+                    <Search
+                        handleSearchInput={this.handleSearchInput.bind(this)}/>
 
-                    />
 
                     <Select
                         name="distance-filter"
@@ -284,6 +301,15 @@ class App extends PureComponent {
                             {value: 1, label: "Independent Stores"}
                         ]}
                     />
+
+                    Nearest store:
+                    <ShopList
+                        shops={this.state.filteredStores}
+                        activeStoreID={this.state.myStore.id}
+                        onMakeMyStoreClick={this.onMakeMyStoreClick.bind(this)}
+
+                    />
+
 
                 </div>
 
