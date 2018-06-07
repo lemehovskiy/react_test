@@ -48,9 +48,17 @@ export default class ShelterMap extends Component {
         super(props)
 
         this.state = {
+            stores: props.stores,
             selectedMarker: false
         }
     }
+    componentWillReceiveProps(nextProps) {
+        // You don't have to do this check first, but it can help prevent an unneeded render
+        if (nextProps.stores !== this.state.stores) {
+            this.setState({ stores: nextProps.stores });
+        }
+    }
+
     componentWillMount() {
 
         this.setState({
@@ -70,11 +78,12 @@ export default class ShelterMap extends Component {
         this.setState({ selectedMarker: marker })
     }
     render() {
+        console.log(this.props);
 
         return (
             <MapWithAMarker
                 selectedMarker={this.state.selectedMarker}
-                stores={this.props.stores}
+                stores={this.state.stores}
                 onClick={this.handleClick.bind(this)}
                 zoomToMarkers={this.state.zoomToMarkers}
                 googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyAkbu04rf_WBmWQhuo9c5K8DV1jrsK3Hlw&v=3.exp&libraries=geometry,drawing,places"
