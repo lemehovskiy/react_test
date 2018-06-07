@@ -294,6 +294,7 @@ class App extends PureComponent {
                             <Select
                                 name="distance-filter"
                                 onChange={this.handleFilterChange('distance').bind(this)}
+                                value={this.state.filters[0].val}
                                 options={[
                                     {value: -1, label: "All Stores"},
                                     {value: 1, label: '1 km'},
@@ -307,6 +308,7 @@ class App extends PureComponent {
                             <h3>Filter by store type</h3>
                             <Select
                                 name="store-type-filter"
+                                value={this.state.filters[1].val}
                                 onChange={this.handleFilterChange('storeType').bind(this)}
                                 options={[
                                     {value: -1, label: "All Stores"},
