@@ -56,7 +56,7 @@ class App extends PureComponent {
                     self.setState({
                         filters: currentFilters
                     }, function () {
-                        console.log(this.state)
+                        // console.log(this.state)
                     })
                 }
             })

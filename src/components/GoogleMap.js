@@ -10,11 +10,12 @@ import {
 
 const MapWithAMarker = compose(withScriptjs, withGoogleMap)(props => {
 
+    console.log(props);
     return (
         <GoogleMap ref={props.zoomToMarkers} defaultZoom={8} defaultCenter={{ lat: 29.5, lng: -95 }}>
             {props.stores.map(store => {
                 const onClick = props.onClick.bind(this, store)
-                console.log(props);
+                {/*console.log(props.stores);*/}
                 return (
                     <Marker
                         key={store.id}
@@ -44,17 +45,15 @@ const MapWithAMarker = compose(withScriptjs, withGoogleMap)(props => {
 
 export default class ShelterMap extends Component {
     constructor(props) {
-        console.log(props);
         super(props)
+
         this.state = {
-            stores: props.stores,
             selectedMarker: false
         }
     }
     componentWillMount() {
 
         this.setState({
-
             zoomToMarkers: map => {
                 const bounds = new window.google.maps.LatLngBounds();
                 map.props.children.forEach((child) => {
@@ -71,10 +70,11 @@ export default class ShelterMap extends Component {
         this.setState({ selectedMarker: marker })
     }
     render() {
+
         return (
             <MapWithAMarker
                 selectedMarker={this.state.selectedMarker}
-                stores={this.state.stores}
+                stores={this.props.stores}
                 onClick={this.handleClick.bind(this)}
                 zoomToMarkers={this.state.zoomToMarkers}
                 googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyAkbu04rf_WBmWQhuo9c5K8DV1jrsK3Hlw&v=3.exp&libraries=geometry,drawing,places"
