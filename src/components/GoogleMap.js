@@ -9,8 +9,6 @@ import {
 } from "react-google-maps"
 
 const MapWithAMarker = compose(withScriptjs, withGoogleMap)(props => {
-
-    console.log(props);
     return (
         <GoogleMap ref={props.zoomToMarkers} defaultZoom={8} defaultCenter={{ lat: 29.5, lng: -95 }}>
             {props.stores.map(store => {
@@ -78,8 +76,6 @@ export default class ShelterMap extends Component {
         this.setState({ selectedMarker: marker })
     }
     render() {
-        console.log(this.props);
-
         return (
             <MapWithAMarker
                 selectedMarker={this.state.selectedMarker}

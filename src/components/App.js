@@ -24,6 +24,7 @@ class App extends PureComponent {
             ip: null,
             location: {},
             myStore: null,
+            searchVal: null,
             shops: [],
             filteredStores: [],
             userForceCheckStore: false,
@@ -44,12 +45,9 @@ class App extends PureComponent {
 
     handleFilterChange(filterName) {
 
-        console.log(arguments);
-
         let self = this;
 
-        let currentFilters = this.state.filters,
-            filteredStores = this.state.shops;
+        let currentFilters = this.state.filters;
 
         return function (filterVal) {
             currentFilters.forEach(function (filter) {
@@ -59,38 +57,53 @@ class App extends PureComponent {
                     self.setState({
                         filters: currentFilters
                     }, function () {
-                        // console.log(this.state)
+                        this.filterStores();
                     })
                 }
             })
-
-
-            this.state.filters.forEach(function (filter) {
-                if (filter.val === null || filter.val === -1) return;
-
-                if (filter.name === 'distance') {
-                    filteredStores = _.filter(filteredStores, function (item) {
-                        return item.distance < filter.val
-                    })
-                }
-
-                else if (filter.name === 'storeType') {
-                    filteredStores = _.filter(filteredStores, function (item) {
-                        return item.storeTypeID === filter.val
-                    })
-                }
-            })
-
-            self.setState({
-                filteredStores: filteredStores
-            })
-
         }.bind(this);
-
     }
 
     filterStores(){
+        let self = this;
 
+        let filteredStores = this.state.shops;
+
+        this.state.filters.forEach(function (filter) {
+            if (filter.val === null || filter.val === -1) return;
+
+            if (filter.name === 'distance') {
+                filteredStores = _.filter(filteredStores, function (item) {
+                    return item.distance < filter.val
+                })
+            }
+
+            else if (filter.name === 'storeType') {
+                filteredStores = _.filter(filteredStores, function (item) {
+                    return item.storeTypeID === filter.val
+                })
+            }
+        })
+
+        if (!(this.state.searchVal === null)) {
+            filteredStores = filteredStores.filter(function (store) {
+                let searchStr = store.title.toLowerCase() + ' ' + store.address.toLowerCase() + ' ' + store.zip;
+                return searchStr.search(self.state.searchVal.toLowerCase()) !== -1;
+            });
+        }
+
+
+        self.setState({
+            filteredStores: filteredStores
+        })
+    }
+
+    handleSearchInput(event) {
+        this.setState({
+            searchVal: event.target.value
+        }, function(){
+            this.filterStores();
+        })
     }
 
     componentDidMount() {
@@ -237,19 +250,6 @@ class App extends PureComponent {
         return JSON.parse(sessionStorage.getItem(this.storageKey));
     }
 
-    handleSearchInput(event) {
-        let updatedList = this.state.filteredStores;
-
-        updatedList = updatedList.filter(function (item) {
-            // console.log(item);
-            return item.title.toLowerCase().search(
-                    event.target.value.toLowerCase()) !== -1;
-        });
-
-        this.setState({
-            filteredStores: updatedList
-        });
-    }
 
     render() {
         const {error, dataLoaded, ip, location, distanceFilterVal} = this.state;
