@@ -24,3 +24,21 @@
         }
     }
 }
+.btn-primary{
+    border:1px solid #8bcf54;
+    border-radius: 3px;
+    font-size:17px;
+    font-family:arial, helvetica, sans-serif;
+    padding: 10px 20px;
+    text-decoration:none;
+    display:block;
+    text-shadow: -1px -1px 0 rgba(0,0,0,0.3);
+    font-weight:bold; color: #FFFFFF;
+    background-image: linear-gradient(to bottom, #a9db80, #96c56f);
+    margin: 30px auto;
+    &:hover{
+        border:1px solid #74bf36;
+        background-image: linear-gradient(to bottom, #8ed058, #7bb64b);
+        cursor:pointer;
+    }
+}
