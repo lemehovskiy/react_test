@@ -10,7 +10,7 @@ import {
 } from "react-google-maps"
 
 const MapWithAMarker = compose(
-    withState('zoom', 'onZoomChange', 12),
+    withState('zoom', 'onZoomChange', 11),
     withHandlers(() => {
         const refs = {
             map: undefined,
@@ -77,17 +77,33 @@ export default class ShelterMap extends Component {
             stores: props.stores,
             selectedMarker: false,
             markers: [],
-            zoomToMarkers: {},
             onZoomChange: {}
         }
-
+        this.zoomToMarkers = this.zoomToMarkers.bind(this);
     }
     componentWillReceiveProps(nextProps) {
+        console.log('componentWillReceiveProps method')
         // You don't have to do this check first, but it can help prevent an unneeded render
         if (nextProps.stores !== this.state.stores) {
             this.setState({ stores: nextProps.stores });
+            this.zoomToMarkers(nextProps.stores)
         }
     }
+
+    zoomToMarkers(maps){
+        console.log(maps)
+        const bounds = new window.google.maps.LatLngBounds();
+        maps.forEach((map) => {
+            console.log(map)
+            console.log(Marker)
+            console.log(bounds)
+            if (map === Marker) {
+                let res = bounds.extend(new window.google.maps.LatLng(map.lat, map.lng));
+            }
+        })
+        // maps.fitBounds(res);
+    }
+
 
     componentWillMount() {
         console.log('componentWillMount method')
@@ -96,17 +112,18 @@ export default class ShelterMap extends Component {
 
     componentDidMount() {
         console.log('componentDidMount method')
-        this.setState({
-            zoomToMarkers: map => {
-                const bounds = new window.google.maps.LatLngBounds();
-                map.props.children.forEach((child) => {
-                    if (child.type === Marker) {
-                        bounds.extend(new window.google.maps.LatLng(child.props.position.lat, child.props.position.lng));
-                    }
-                })
-                map.fitBounds(bounds);
-            }
-        })
+        // this.setState({
+        //     zoomToMarkers: map => {
+        //         const bounds = new window.google.maps.LatLngBounds();
+        //         map.props.children.forEach((child) => {
+        //             if (child.type === Marker) {
+        //                 console.log(Marker)
+        //                 bounds.extend(new window.google.maps.LatLng(child.props.position.lat, child.props.position.lng));
+        //             }
+        //         })
+        //         map.fitBounds(bounds);
+        //     }
+        // })
     }
 
 
