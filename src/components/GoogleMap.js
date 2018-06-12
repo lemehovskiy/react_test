@@ -1,5 +1,5 @@
 import React, { Component } from "react"
-import { compose } from "recompose"
+import { compose , withProps, withState, withHandlers } from "recompose"
 import {
     withScriptjs,
     withGoogleMap,
@@ -8,9 +8,30 @@ import {
     InfoWindow
 } from "react-google-maps"
 
-const MapWithAMarker = compose(withScriptjs, withGoogleMap)(props => {
+const MapWithAMarker = compose(
+    withState('zoom', 'onZoomChange', 12),
+    withHandlers(() => {
+        const refs = {
+            map: undefined,
+        }
+
+        return {
+            onMapMounted: () => ref => {
+                refs.map = ref
+            },
+            onZoomChanged: ({ onZoomChange }) => () => {
+                onZoomChange(refs.map.getZoom())
+            }
+        }
+    }),
+    withScriptjs,
+    withGoogleMap)
+    (props => {
     return (
-        <GoogleMap ref={props.zoomToMarkers} defaultZoom={8} defaultCenter={{ lat: 29.5, lng: -95 }}>
+        <GoogleMap
+            ref={props.zoomToMarkers}
+            defaultZoom={8}
+            defaultCenter={{ lat: props.stores[0].lat, lng: props.stores[0].lng }}>
             {props.stores.map(store => {
                 const onClick = props.onClick.bind(this, store)
                 {/*console.log(props.stores);*/}
@@ -47,7 +68,8 @@ export default class ShelterMap extends Component {
 
         this.state = {
             stores: props.stores,
-            selectedMarker: false
+            selectedMarker: false,
+            markers: []
         }
     }
     componentWillReceiveProps(nextProps) {
@@ -58,7 +80,10 @@ export default class ShelterMap extends Component {
     }
 
     componentWillMount() {
+        this.setState({ markers: [] })
+    }
 
+    componentDidMount() {
         this.setState({
             zoomToMarkers: map => {
                 const bounds = new window.google.maps.LatLngBounds();
