@@ -5,7 +5,8 @@ import {
     withGoogleMap,
     GoogleMap,
     Marker,
-    InfoWindow
+    InfoWindow,
+
 } from "react-google-maps"
 
 const MapWithAMarker = compose(
@@ -18,9 +19,12 @@ const MapWithAMarker = compose(
         return {
             onMapMounted: () => ref => {
                 refs.map = ref
+                console.log('onMapMounted')
             },
             onZoomChanged: ({ onZoomChange }) => () => {
-                onZoomChange(refs.map.getZoom())
+                onZoomChange(refs.map.getZoom(
+                    console.log('onZoomChanged')
+                ))
             }
         }
     }),
@@ -29,12 +33,15 @@ const MapWithAMarker = compose(
     (props => {
     return (
         <GoogleMap
-            ref={props.zoomToMarkers}
-            defaultZoom={8}
+            zoom={props.zoom}
+            ref={props.onMapMounted}
+            onZoomChanged={props.onZoomChanged}
+            zoomToMarkers={props.zoomToMarkers}
             defaultCenter={{ lat: props.stores[0].lat, lng: props.stores[0].lng }}>
             {props.stores.map(store => {
                 const onClick = props.onClick.bind(this, store)
-                {/*console.log(props.stores);*/}
+                {/*const zoomToMarkers = props.zoomToMarkers.bind(this.store)*/}
+
                 return (
                     <Marker
                         key={store.id}
@@ -47,7 +54,7 @@ const MapWithAMarker = compose(
                             scale: 1.1,
                             strokeWeight: 0,
                         }}
-                    >
+                        >
                         {props.selectedMarker === store &&
                         <InfoWindow>
                             <div>
@@ -69,8 +76,11 @@ export default class ShelterMap extends Component {
         this.state = {
             stores: props.stores,
             selectedMarker: false,
-            markers: []
+            markers: [],
+            zoomToMarkers: {},
+            onZoomChange: {}
         }
+
     }
     componentWillReceiveProps(nextProps) {
         // You don't have to do this check first, but it can help prevent an unneeded render
@@ -80,10 +90,12 @@ export default class ShelterMap extends Component {
     }
 
     componentWillMount() {
+        console.log('componentWillMount method')
         this.setState({ markers: [] })
     }
 
     componentDidMount() {
+        console.log('componentDidMount method')
         this.setState({
             zoomToMarkers: map => {
                 const bounds = new window.google.maps.LatLngBounds();
@@ -96,11 +108,16 @@ export default class ShelterMap extends Component {
             }
         })
     }
+
+
     handleClick (marker, event) {
+        console.log('handleClick method')
         // console.log({ marker })
         this.setState({ selectedMarker: marker })
+
     }
     render() {
+        console.log('render method')
         return (
             <MapWithAMarker
                 selectedMarker={this.state.selectedMarker}
