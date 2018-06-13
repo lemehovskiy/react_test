@@ -111,7 +111,7 @@ export default class ShelterMap extends Component {
                 onMapMounted={this.handleMapMounted.bind(this)}
                 // onBoundsChanged={this.handleBoundsChanged}
                 defaultZoom={8}
-                defaultCenter={{lat: 29.5, lng: -95}}
+                defaultCenter={{lat: this.state.stores[0].lat, lng: this.state.stores[0].lng}}
             />
 
         );
