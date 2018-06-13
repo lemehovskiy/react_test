@@ -8,6 +8,8 @@
 
 # production
 /build
+/dist
+index.html
 
 # misc
 .DS_Store
