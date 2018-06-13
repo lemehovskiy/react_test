@@ -25,6 +25,8 @@ class App extends PureComponent {
             myStore: null,
             searchVal: null,
             stores: [],
+            currentShowStores: 3,
+            countShowMoreStores: 2,
             filteredStores: [],
             userForceCheckStore: false,
             filters: [
@@ -40,6 +42,15 @@ class App extends PureComponent {
         };
 
         this.storageKey = 'myStore';
+        this.showLoadMore = this.showLoadMore.bind(this);
+    }
+
+    showLoadMore() {
+       this.setState({
+           currentShowStores: this.state.currentShowStores + this.state.countShowMoreStores
+        }, function(){
+           console.log(this.state)
+        })
     }
 
     handleFilterChange(filterName) {
@@ -258,11 +269,10 @@ class App extends PureComponent {
         } else if (!dataLoaded) {
             return <div>Loading...</div>;
         } else {
-
             return (
 
                 <div>
-                    <MapWithAMarker isMarkerShown={true} stores={this.state.filteredStores}/>
+                    <MapWithAMarker isMarkerShown={true}  stores={this.state.filteredStores.slice(0, this.state.currentShowStores)}/>
 
 
                     <div id="find-store-debug">
@@ -320,12 +330,19 @@ class App extends PureComponent {
                     </div>
 
                     <StoreList
-                        stores={this.state.filteredStores}
+                        stores={this.state.filteredStores.slice(0, this.state.currentShowStores)}
                         activeStoreID={this.state.myStore.id}
                         onMakeMyStoreClick={this.onMakeMyStoreClick.bind(this)}
 
                     />
-
+                    <button className="btn btn-primary" onClick={this.showLoadMore}>
+                        {this.state.expanded ? (
+                                <span>Collapse List</span>
+                            ) : (
+                                <span>Show more</span>
+                            )
+                        }
+                    </button>
 
                 </div>
 
