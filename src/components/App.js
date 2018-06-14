@@ -29,6 +29,7 @@ class App extends PureComponent {
             countShowMoreStores: 2,
             filteredStores: [],
             userForceCheckStore: false,
+            expanded: false,
             filters: [
                 {
                     name: 'distance',
@@ -46,11 +47,17 @@ class App extends PureComponent {
     }
 
     showLoadMore() {
-       this.setState({
-           currentShowStores: this.state.currentShowStores + this.state.countShowMoreStores
-        }, function(){
-           console.log(this.state)
-        })
+        this.setState({
+            currentShowStores: this.state.currentShowStores + this.state.countShowMoreStores
+        }, () => this.storesCallFunction())
+    }
+
+    storesCallFunction(){
+        if(this.state.currentShowStores >= this.state.stores.length){
+            this.setState({
+                expanded: true
+            })
+        }
     }
 
     handleFilterChange(filterName) {
@@ -335,15 +342,9 @@ class App extends PureComponent {
                         onMakeMyStoreClick={this.onMakeMyStoreClick.bind(this)}
 
                     />
-                    <button className="btn btn-primary" onClick={this.showLoadMore}>
-                        {this.state.expanded ? (
-                                <span>Collapse List</span>
-                            ) : (
-                                <span>Show more</span>
-                            )
-                        }
-                    </button>
-
+                    {this.state.expanded ? ('') : (
+                            <button className="btn btn-primary" onClick={this.showLoadMore}><span>Show more</span></button>  )
+                    }
                 </div>
 
 
