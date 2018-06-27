@@ -73,21 +73,21 @@ class App extends PureComponent {
 
         let filteredStores = this.state.stores;
 
-        this.state.filters.forEach(function (filter) {
-            if (filter.val === null || filter.val === -1) return;
-
-            if (filter.name === 'distance') {
-                filteredStores = _.filter(filteredStores, function (item) {
-                    return item.distance < filter.val
-                })
-            }
-
-            else if (filter.name === 'storeType') {
-                filteredStores = _.filter(filteredStores, function (item) {
-                    return item.storeTypeID === filter.val
-                })
-            }
-        })
+        // this.state.filters.forEach(function (filter) {
+        //     if (filter.val === null || filter.val === -1) return;
+        //
+        //     if (filter.name === 'distance') {
+        //         filteredStores = _.filter(filteredStores, function (item) {
+        //             return item.distance < filter.val
+        //         })
+        //     }
+        //
+        //     else if (filter.name === 'storeType') {
+        //         filteredStores = _.filter(filteredStores, function (item) {
+        //             return item.storeTypeID === filter.val
+        //         })
+        //     }
+        // })
 
         if (!(this.state.searchVal === null)) {
             filteredStores = filteredStores.filter(function (store) {
@@ -306,37 +306,6 @@ class App extends PureComponent {
                     <Search
                         handleSearchInput={this.handleSearchInput.bind(this)}/>
 
-
-                    <div className="form-row">
-                        <div className="form-group">
-                            <h3>Filter by distance</h3>
-                            <Select
-                                name="distance-filter"
-                                onChange={this.handleFilterChange('distance').bind(this)}
-                                value={this.state.filters[0].val}
-                                options={[
-                                    {value: -1, label: "All Stores"},
-                                    {value: 1, label: '1 km'},
-                                    {value: 5, label: '5 km'},
-                                    {value: 10, label: '10 km'}
-                                ]}
-                            />
-                        </div>
-
-                        <div className="form-group">
-                            <h3>Filter by store type</h3>
-                            <Select
-                                name="store-type-filter"
-                                value={this.state.filters[1].val}
-                                onChange={this.handleFilterChange('storeType').bind(this)}
-                                options={[
-                                    {value: -1, label: "All Stores"},
-                                    {value: 0, label: "Dealer Stores"},
-                                    {value: 1, label: "Independent Stores"}
-                                ]}
-                            />
-                        </div>
-                    </div>
 
                     <StoreList
                         stores={this.state.filteredStores.slice(0, this.state.dealerListOffset)}
