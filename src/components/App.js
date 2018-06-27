@@ -114,65 +114,25 @@ class App extends PureComponent {
 
         let promiseArr = [];
 
-        promiseArr.push(new Promise((resolve, reject) => {
-            setTimeout(() => {
-                this.setState({
-                    stores: stores
-                })
-                resolve("Stores loaded");
-            }, 1000);
-
-        }));
+        promiseArr.push(this.getStores());
 
 
-        this.getStorageData();
-
-
-
-        if (this.state.location.latitude === 'undefined' || this.state.location.longitude === 'undefined') {
-
-            promiseArr.push(fetch("https://json.geoiplookup.io/api")
-                .then(res => res.json())
-                .then(
-                    (result) => {
-                        this.setState({
-                            ip: "78.137.6.109"
-                        });
-                        // alert('asd');
-
-                        const {ip} = this.state;
-
-                        return fetch("http://api.ipstack.com/" + ip + "?access_key=7d397b1c07df95585a1bb05dd8ba894e")
-                            .then(res => res.json())
-                            .then(
-                                (result) => {
-                                    this.setUserLocation({latitude: result.latitude, longitude: result.longitude});
-
-                                    return result;
-                                },
-                                // Note: it's important to handle errors here
-                                // instead of a catch() block so that we don't swallow
-                                // exceptions from actual bugs in components.
-                                (error) => {
-                                    this.setState({
-                                        error
-                                    });
-                                }
-                            )
-                    },
-
-                    (error) => {
-                        this.setState({
-                            error
-                        });
-                    }
-                )
-            )
-        }
-
-        else {
+        if (this.getStorageData() != null) {
+            console.log('pull');
             this.pullFromStorage();
         }
+
+
+        console.log('1');
+
+        console.log(this.state)
+        if (this.state.location.latitude == null || this.state.location.longitude == null) {
+
+            console.log('2');
+
+            promiseArr.push(this.getLocation())
+        }
+
 
         Promise.all(promiseArr).then(values => {
 
@@ -190,6 +150,58 @@ class App extends PureComponent {
 
             this.pushToStorage();
         });
+    }
+
+    getLocation(){
+        return fetch("https://jsonip.com/")
+            .then(res => res.json())
+            .then(
+                (result) => {
+                    this.setState({
+                        ip: result.ip
+                    });
+                    // alert('asd');
+
+                    const {ip} = this.state;
+
+
+                    return fetch("http://api.ipstack.com/" + ip + "?access_key=7d397b1c07df95585a1bb05dd8ba894e")
+                        .then(res => res.json())
+                        .then(
+                            (result) => {
+                                this.setUserLocation({latitude: result.latitude, longitude: result.longitude});
+
+                                return result;
+                            },
+                            // Note: it's important to handle errors here
+                            // instead of a catch() block so that we don't swallow
+                            // exceptions from actual bugs in components.
+                            (error) => {
+                                this.setState({
+                                    error
+                                });
+                            }
+                        )
+                },
+
+                (error) => {
+                    this.setState({
+                        error
+                    });
+                }
+            )
+    }
+
+    getStores(){
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                this.setState({
+                    stores: stores
+                })
+                resolve("Stores loaded");
+            }, 1000);
+
+        })
     }
 
     initFilteredStores() {
@@ -220,8 +232,11 @@ class App extends PureComponent {
     }
 
     setUserLocation(location) {
+
+        console.log('set-user');
+        console.log(location);
         this.setState({
-            location: {latitude: location.latitude, longitude: location.longitude}
+            location: location
         });
     }
 
