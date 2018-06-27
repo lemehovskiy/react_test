@@ -29,6 +29,7 @@
     "build": "NODE_ENV=production webpack"
   },
   "devDependencies": {
+    "babel-preset-stage-2": "^6.24.1",
     "react-google-maps": "^9.4.5",
     "react-select": "^1.2.1",
     "recompose": "^0.27.1"

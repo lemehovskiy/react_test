@@ -120,14 +120,20 @@ class App extends PureComponent {
         }));
 
 
-        if (this.getStorageData() === null) {
+        this.getStorageData();
+
+
+
+        if (this.state.location.latitude === 'undefined' || this.state.location.longitude === 'undefined') {
+
             promiseArr.push(fetch("https://json.geoiplookup.io/api")
                 .then(res => res.json())
                 .then(
                     (result) => {
                         this.setState({
-                            ip: result.ip
+                            ip: "78.137.6.109"
                         });
+                        // alert('asd');
 
                         const {ip} = this.state;
 
