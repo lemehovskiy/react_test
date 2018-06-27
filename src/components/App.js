@@ -27,6 +27,11 @@ class App extends PureComponent {
             stores: [],
             filteredStores: [],
             userForceCheckStore: false,
+            markerOffset: 2,
+            dealerListOffset: 2,
+
+            showMoreVal: 1,
+
             filters: [
                 {
                     name: 'distance',
@@ -255,6 +260,14 @@ class App extends PureComponent {
         return JSON.parse(sessionStorage.getItem(this.storageKey));
     }
 
+    showMoreMarkersAndDealerList(){
+
+        this.setState({
+            markerOffset: this.state.markerOffset + this.state.showMoreVal,
+            dealerListOffset: this.state.dealerListOffset + this.state.showMoreVal
+        })
+    }
+
 
     render() {
         const {error, dataLoaded, ip, location, distanceFilterVal} = this.state;
@@ -268,7 +281,7 @@ class App extends PureComponent {
             return (
 
                 <div>
-                    <MapWithAMarker isMarkerShown={true} stores={this.state.filteredStores}/>
+                    <MapWithAMarker isMarkerShown={true} stores={this.state.filteredStores.slice(0, this.state.markerOffset)}/>
 
 
                     <div id="find-store-debug">
@@ -326,11 +339,16 @@ class App extends PureComponent {
                     </div>
 
                     <StoreList
-                        stores={this.state.filteredStores}
+                        stores={this.state.filteredStores.slice(0, this.state.dealerListOffset)}
                         activeStoreID={this.state.myStore.id}
                         onMakeMyStoreClick={this.onMakeMyStoreClick.bind(this)}
 
                     />
+
+
+                    <button onClick={this.showMoreMarkersAndDealerList.bind(this)}>
+                        Show more
+                    </button>
 
 
                 </div>
