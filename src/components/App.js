@@ -112,27 +112,35 @@ class App extends PureComponent {
 
     componentDidMount() {
 
+        navigator.connection.addEventListener('typechange', function(){
+            console.log(navigator.connection.type);
+        });
+
         let promiseArr = [];
+
+        let storageData = this.getStorageData();
 
         promiseArr.push(this.getStores());
 
-
-        if (this.getStorageData() != null) {
-            console.log('pull');
+        //check is storage exist
+        if (storageData !== null) {
             this.pullFromStorage();
+
+            //check if location in storage is empty
+            if (storageData.location.latitude === null || storageData.location.longitude === null) {
+                promiseArr.push(this.getLocation())
+            }
         }
 
-
-        console.log('1');
-
-        console.log(this.state)
-        if (this.state.location.latitude == null || this.state.location.longitude == null) {
-
-            console.log('2');
-
+        // if storage empty - get location
+        else {
             promiseArr.push(this.getLocation())
         }
 
+
+        // console.log('1');
+        //
+        // console.log(this.state)
 
         Promise.all(promiseArr).then(values => {
 
@@ -152,6 +160,8 @@ class App extends PureComponent {
         });
     }
 
+
+
     getLocation(){
         return fetch("https://jsonip.com/")
             .then(res => res.json())
@@ -162,14 +172,29 @@ class App extends PureComponent {
                     });
                     // alert('asd');
 
-                    const {ip} = this.state;
+                    // const {ip} = this.state;
+                    const ip = '37.73.134.205';
 
 
                     return fetch("http://api.ipstack.com/" + ip + "?access_key=7d397b1c07df95585a1bb05dd8ba894e")
                         .then(res => res.json())
                         .then(
                             (result) => {
-                                this.setUserLocation({latitude: result.latitude, longitude: result.longitude});
+
+                                if (result.city === null) {
+                                    navigator.geolocation.getCurrentPosition(function (position) {
+
+                                        this.setUserLocation({latitude: position.coords.latitude, longitude: position.coords.longitude});
+
+                                    }, function () {
+                                        console.error('Error: The Geolocation service failed.');
+
+                                        return false;
+                                    });
+                                }
+                                else {
+                                    this.setUserLocation({latitude: result.latitude, longitude: result.longitude});
+                                }
 
                                 return result;
                             },
