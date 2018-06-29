@@ -44,6 +44,7 @@ class App extends PureComponent {
             ]
         };
 
+        this.promiseArr = [];
         this.storageKey = 'myStore';
     }
 
@@ -112,15 +113,9 @@ class App extends PureComponent {
 
     componentDidMount() {
 
-        navigator.connection.addEventListener('typechange', function(){
-            console.log(navigator.connection.type);
-        });
-
-        let promiseArr = [];
-
         let storageData = this.getStorageData();
 
-        promiseArr.push(this.getStores());
+        this.promiseArr.push(this.getStores());
 
         //check is storage exist
         if (storageData !== null) {
@@ -128,13 +123,13 @@ class App extends PureComponent {
 
             //check if location in storage is empty
             if (storageData.location.latitude === null || storageData.location.longitude === null) {
-                promiseArr.push(this.getLocation())
+                this.promiseArr.push(this.getLocation())
             }
         }
 
         // if storage empty - get location
         else {
-            promiseArr.push(this.getLocation())
+            this.promiseArr.push(this.getLocation())
         }
 
 
@@ -142,7 +137,9 @@ class App extends PureComponent {
         //
         // console.log(this.state)
 
-        Promise.all(promiseArr).then(values => {
+        Promise.all(this.promiseArr).then(values => {
+
+            console.log('promiseAll');
 
             this.setStoreDistance();
             this.sortStoreByDistance();
@@ -161,8 +158,56 @@ class App extends PureComponent {
     }
 
 
+    getLocation() {
 
-    getLocation(){
+        let self = this;
+
+
+        console.log('getLocation');
+        // new Promise((resolve, reject) => {
+        // console.log(this.getLocationByIp());
+
+        // });
+
+
+
+
+
+        self.getLocationByIp().then(function (result) {
+
+            console.log(result.city);
+
+            if (result.city === null) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+
+                    self.setUserLocation({latitude: position.latitude, longitude: position.longitude});
+
+                }, function () {
+                    console.error('Error: The Geolocation service failed.');
+
+                    return false;
+                });
+
+            }
+
+        })
+
+
+        // promise.then(resu)
+
+        // this.setUserLocation({latitude: result.latitude, longitude: result.longitude});
+    }
+
+    getLocationByCurrentPosition() {
+
+    }
+
+    getLocationByIp() {
+
+        let self = this;
+
+        console.log('getLocationByIp')
+
         return fetch("https://jsonip.com/")
             .then(res => res.json())
             .then(
@@ -180,21 +225,24 @@ class App extends PureComponent {
                         .then(res => res.json())
                         .then(
                             (result) => {
-
-                                if (result.city === null) {
-                                    navigator.geolocation.getCurrentPosition(function (position) {
-
-                                        this.setUserLocation({latitude: position.coords.latitude, longitude: position.coords.longitude});
-
-                                    }, function () {
-                                        console.error('Error: The Geolocation service failed.');
-
-                                        return false;
-                                    });
-                                }
-                                else {
-                                    this.setUserLocation({latitude: result.latitude, longitude: result.longitude});
-                                }
+                                // if (result.city === null) {
+                                //
+                                //     console.log('null');
+                                //     navigator.geolocation.getCurrentPosition(function (position) {
+                                //
+                                //         console.log(position);
+                                //
+                                //         self.setUserLocation({latitude: position.coords.latitude, longitude: position.coords.longitude});
+                                //
+                                //     }, function () {
+                                //         console.error('Error: The Geolocation service failed.');
+                                //
+                                //         return false;
+                                //     });
+                                // }
+                                // else {
+                                //
+                                // }
 
                                 return result;
                             },
@@ -217,7 +265,7 @@ class App extends PureComponent {
             )
     }
 
-    getStores(){
+    getStores() {
         return new Promise((resolve, reject) => {
             setTimeout(() => {
                 this.setState({
@@ -253,16 +301,16 @@ class App extends PureComponent {
             userForceCheckStore: this.state.userForceCheckStore
         }
 
-        sessionStorage.setItem(this.storageKey, JSON.stringify(storageData));
+        // sessionStorage.setItem(this.storageKey, JSON.stringify(storageData));
     }
 
     setUserLocation(location) {
 
-        console.log('set-user');
-        console.log(location);
-        this.setState({
-            location: location
-        });
+        console.log('setUserLocation');
+
+            this.setState({
+                location: location
+            });
     }
 
     setMyStore(storeID) {
@@ -300,7 +348,7 @@ class App extends PureComponent {
         return JSON.parse(sessionStorage.getItem(this.storageKey));
     }
 
-    showMoreMarkersAndDealerList(){
+    showMoreMarkersAndDealerList() {
 
         this.setState({
             markerOffset: this.state.markerOffset + this.state.showMoreVal,
@@ -321,7 +369,8 @@ class App extends PureComponent {
             return (
 
                 <div>
-                    <MapWithAMarker isMarkerShown={true} stores={this.state.filteredStores.slice(0, this.state.markerOffset)}/>
+                    <MapWithAMarker isMarkerShown={true}
+                                    stores={this.state.filteredStores.slice(0, this.state.markerOffset)}/>
 
 
                     <div id="find-store-debug">
