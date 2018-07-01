@@ -30,6 +30,7 @@ class App extends PureComponent {
             markerOffset: 2,
             dealerListOffset: 2,
 
+
             showMoreVal: 1,
 
             filters: [
@@ -154,7 +155,20 @@ class App extends PureComponent {
             })
 
             this.pushToStorage();
-        });
+        },
+            reason => {
+                // console.log(reason)
+
+                console.log(this.state);
+
+                this.initFilteredStores();
+                this.setMyStore(this.state.stores[0].id);
+
+                this.setState({
+                    dataLoaded: true
+                })
+
+            });
     }
 
 
@@ -162,35 +176,83 @@ class App extends PureComponent {
 
         let self = this;
 
-
         console.log('getLocation');
+
+        // console.log('getLocation');
         // new Promise((resolve, reject) => {
         // console.log(this.getLocationByIp());
 
         // });
 
 
+        return new Promise(function (resolve, reject) {
+
+            // console.log(self.getLocationByIp());
+
+            self.getLocationByIp().then(function (result) {
+
+                // resolve("Get Location");
+                console.log(result);
+
+                if (result.city === null) {
+
+                    console.log('city is null');
+
+                    self.getLocationByCurrentPosition()
+                        .then(
+                            response => console.log('getLocationByCurrentPosition=success'),
+                            error => reject('getLocationByCurrentPosition-error')
+                        );
+
+                }
+
+                else {
+                    return resolve;
+                }
 
 
-
-        self.getLocationByIp().then(function (result) {
-
-            console.log(result.city);
-
-            if (result.city === null) {
-                navigator.geolocation.getCurrentPosition(function (position) {
-
-                    self.setUserLocation({latitude: position.latitude, longitude: position.longitude});
-
-                }, function () {
-                    console.error('Error: The Geolocation service failed.');
-
-                    return false;
-                });
-
-            }
-
+            })
         })
+
+
+        //
+        // self.getLocationByIp().then(function (result) {
+        //     console.log(result);
+        //     return result;
+        //
+        // })
+        //
+        //
+        // return new Promise((resolve, reject) => {
+        //     self.getLocationByIp().then(function (result) {
+        //         console.log(result);
+        //         return result;
+        //
+        //     })
+        //
+        // })
+
+
+        // self.getLocationByIp().then(function (result) {
+        //
+        //     console.log('getLocation');
+        //
+        //     // console.log(result.city);
+        //     //
+        //     // if (result.city === null) {
+        //     //     navigator.geolocation.getCurrentPosition(function (position) {
+        //     //
+        //     //         self.setUserLocation({latitude: position.latitude, longitude: position.longitude});
+        //     //
+        //     //     }, function () {
+        //     //         console.error('Error: The Geolocation service failed.');
+        //     //
+        //     //         return false;
+        //     //     });
+        //     //
+        //     // }
+        //
+        // })
 
 
         // promise.then(resu)
@@ -199,7 +261,33 @@ class App extends PureComponent {
     }
 
     getLocationByCurrentPosition() {
+        // let self = this;
 
+        console.log('getLocationByCurrentPosition');
+
+        return new Promise(function (resolve, reject) {
+
+            navigator.geolocation.getCurrentPosition(function (position) {
+
+                resolve(position);
+
+                // return position;
+                //
+                // self.setUserLocation(
+                //     {
+                //         latitude: position.latitude,
+                //         longitude: position.longitude
+                //     },
+                //     function () {
+                //         resolve("Stores loaded");
+                //     }
+                // );
+
+            }, function () {
+                reject('Error: The Geolocation service failed.')
+            });
+
+        });
     }
 
     getLocationByIp() {
@@ -250,22 +338,19 @@ class App extends PureComponent {
                             // instead of a catch() block so that we don't swallow
                             // exceptions from actual bugs in components.
                             (error) => {
-                                this.setState({
-                                    error
-                                });
+                                return error;
                             }
                         )
                 },
 
                 (error) => {
-                    this.setState({
-                        error
-                    });
+                    return error;
                 }
             )
     }
 
     getStores() {
+        console.log('getStores');
         return new Promise((resolve, reject) => {
             setTimeout(() => {
                 this.setState({
@@ -308,9 +393,9 @@ class App extends PureComponent {
 
         console.log('setUserLocation');
 
-            this.setState({
-                location: location
-            });
+        this.setState({
+            location: location
+        });
     }
 
     setMyStore(storeID) {
