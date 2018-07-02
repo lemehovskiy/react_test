@@ -124,13 +124,13 @@ class App extends PureComponent {
 
             //check if location in storage is empty
             if (storageData.location.latitude === null || storageData.location.longitude === null) {
-                this.promiseArr.push(this.getLocation())
+                this.promiseArr.push(this.setUserLocation())
             }
         }
 
         // if storage empty - get location
         else {
-            this.promiseArr.push(this.getLocation())
+            this.promiseArr.push(this.setUserLocation())
         }
 
 
@@ -157,9 +157,9 @@ class App extends PureComponent {
             this.pushToStorage();
         },
             reason => {
-                // console.log(reason)
+                console.log(reason)
 
-                console.log(this.state);
+                // console.log(this.state);
 
                 this.initFilteredStores();
                 this.setMyStore(this.state.stores[0].id);
@@ -178,32 +178,24 @@ class App extends PureComponent {
 
         console.log('getLocation');
 
-        // console.log('getLocation');
-        // new Promise((resolve, reject) => {
-        // console.log(this.getLocationByIp());
-
-        // });
-
-
         return new Promise(function (resolve, reject) {
 
             // console.log(self.getLocationByIp());
 
+
             self.getLocationByIp().then(function (result) {
 
                 // resolve("Get Location");
-                console.log(result);
+                // console.log(result);
 
                 if (result.city === null) {
 
                     console.log('city is null');
 
-                    self.getLocationByCurrentPosition()
-                        .then(
-                            response => console.log('getLocationByCurrentPosition=success'),
-                            error => reject('getLocationByCurrentPosition-error')
-                        );
+                    self.getLocationByCurrentPosition().then(response => {
 
+                        resolve(response);
+                    })
                 }
 
                 else {
@@ -214,50 +206,6 @@ class App extends PureComponent {
             })
         })
 
-
-        //
-        // self.getLocationByIp().then(function (result) {
-        //     console.log(result);
-        //     return result;
-        //
-        // })
-        //
-        //
-        // return new Promise((resolve, reject) => {
-        //     self.getLocationByIp().then(function (result) {
-        //         console.log(result);
-        //         return result;
-        //
-        //     })
-        //
-        // })
-
-
-        // self.getLocationByIp().then(function (result) {
-        //
-        //     console.log('getLocation');
-        //
-        //     // console.log(result.city);
-        //     //
-        //     // if (result.city === null) {
-        //     //     navigator.geolocation.getCurrentPosition(function (position) {
-        //     //
-        //     //         self.setUserLocation({latitude: position.latitude, longitude: position.longitude});
-        //     //
-        //     //     }, function () {
-        //     //         console.error('Error: The Geolocation service failed.');
-        //     //
-        //     //         return false;
-        //     //     });
-        //     //
-        //     // }
-        //
-        // })
-
-
-        // promise.then(resu)
-
-        // this.setUserLocation({latitude: result.latitude, longitude: result.longitude});
     }
 
     getLocationByCurrentPosition() {
@@ -269,19 +217,7 @@ class App extends PureComponent {
 
             navigator.geolocation.getCurrentPosition(function (position) {
 
-                resolve(position);
-
-                // return position;
-                //
-                // self.setUserLocation(
-                //     {
-                //         latitude: position.latitude,
-                //         longitude: position.longitude
-                //     },
-                //     function () {
-                //         resolve("Stores loaded");
-                //     }
-                // );
+                resolve({latitude: position.coords.latitude, longitude: position.coords.longitude});
 
             }, function () {
                 reject('Error: The Geolocation service failed.')
@@ -305,38 +241,16 @@ class App extends PureComponent {
                     });
                     // alert('asd');
 
-                    // const {ip} = this.state;
-                    const ip = '37.73.134.205';
+                    const {ip} = this.state;
+                    // const ip = '37.73.134.205';
 
 
                     return fetch("http://api.ipstack.com/" + ip + "?access_key=7d397b1c07df95585a1bb05dd8ba894e")
                         .then(res => res.json())
                         .then(
                             (result) => {
-                                // if (result.city === null) {
-                                //
-                                //     console.log('null');
-                                //     navigator.geolocation.getCurrentPosition(function (position) {
-                                //
-                                //         console.log(position);
-                                //
-                                //         self.setUserLocation({latitude: position.coords.latitude, longitude: position.coords.longitude});
-                                //
-                                //     }, function () {
-                                //         console.error('Error: The Geolocation service failed.');
-                                //
-                                //         return false;
-                                //     });
-                                // }
-                                // else {
-                                //
-                                // }
-
                                 return result;
                             },
-                            // Note: it's important to handle errors here
-                            // instead of a catch() block so that we don't swallow
-                            // exceptions from actual bugs in components.
                             (error) => {
                                 return error;
                             }
@@ -347,6 +261,32 @@ class App extends PureComponent {
                     return error;
                 }
             )
+    }
+
+
+    setUserLocation() {
+
+        let self = this;
+
+        console.log('setUserLocation');
+
+
+        return new Promise(function (resolve, reject) {
+
+            self.getLocation().then(response => {
+
+
+                console.log(response);
+
+                self.setState({
+                    location: response
+                }, function(){
+                    resolve();
+                });
+
+            })
+
+        });
     }
 
     getStores() {
@@ -387,15 +327,6 @@ class App extends PureComponent {
         }
 
         // sessionStorage.setItem(this.storageKey, JSON.stringify(storageData));
-    }
-
-    setUserLocation(location) {
-
-        console.log('setUserLocation');
-
-        this.setState({
-            location: location
-        });
     }
 
     setMyStore(storeID) {

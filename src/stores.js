@@ -70,5 +70,14 @@ export default [
         "zip": 18001,
         "address": "Street 1",
         "storeTypeID": 1
+    },
+    {
+        "id": "9",
+        "title": "Store 9",
+        "lat": 49.452087,
+        "lng": 32.044811,
+        "zip": 18001,
+        "address": "Street 1",
+        "storeTypeID": 1
     }
 ]
