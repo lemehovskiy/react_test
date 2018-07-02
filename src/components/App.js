@@ -180,36 +180,26 @@ class App extends PureComponent {
 
         return new Promise(function (resolve, reject) {
 
-            // console.log(self.getLocationByIp());
+            self.getLocationByIp().then(response => {
 
-
-            self.getLocationByIp().then(function (result) {
-
-                // resolve("Get Location");
-                // console.log(result);
-
-                if (result.city === null) {
+                if (response.city === null) {
 
                     console.log('city is null');
 
                     self.getLocationByCurrentPosition().then(response => {
-
                         resolve(response);
                     })
                 }
 
                 else {
-                    return resolve;
+                    return resolve({latitude: response.latitude, longitude: response.longitude});
                 }
-
-
             })
         })
 
     }
 
     getLocationByCurrentPosition() {
-        // let self = this;
 
         console.log('getLocationByCurrentPosition');
 
