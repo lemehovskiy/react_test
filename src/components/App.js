@@ -138,28 +138,28 @@ class App extends PureComponent {
         //
         // console.log(this.state)
 
-        Promise.all(this.promiseArr).then(values => {
+        Promise.all(this.promiseArr).then(
+            response => {
+                console.log('promiseAll');
 
-            console.log('promiseAll');
+                this.setStoreDistance();
+                this.sortStoreByDistance();
+                this.initFilteredStores();
 
-            this.setStoreDistance();
-            this.sortStoreByDistance();
-            this.initFilteredStores();
+                if (!this.state.userForceCheckStore) {
+                    this.setMyStore(this.state.stores[0].id);
+                }
 
-            if (!this.state.userForceCheckStore) {
-                this.setMyStore(this.state.stores[0].id);
-            }
+                this.setState({
+                    dataLoaded: true
+                })
 
-            this.setState({
-                dataLoaded: true
-            })
-
-            this.pushToStorage();
-        },
-            reason => {
-                console.log(reason)
-
-                // console.log(this.state);
+                this.pushToStorage();
+            },
+            error => {
+                console.log('asd');
+                console.log(error)
+                console.log(this.state);
 
                 this.initFilteredStores();
                 this.setMyStore(this.state.stores[0].id);
@@ -180,26 +180,40 @@ class App extends PureComponent {
 
         return new Promise(function (resolve, reject) {
 
-            self.getLocationByIp().then(response => {
+            let getLocationReject = reject;
 
-                if (response.city === null) {
+            self.getLocationByIp().then(
+                function (result) {
+                    if (result.city === null) {
 
-                    console.log('city is null');
+                        console.log('city is null');
 
-                    self.getLocationByCurrentPosition().then(response => {
-                        resolve(response);
-                    })
+                        self.getLocationByCurrentPosition().then(
+                            response => {
+                                resolve(response)
+                            },
+                            reject => {
+                                getLocationReject(reject)
+
+                            }
+                        )
+                    }
+
+                    else {
+                        return resolve({latitude: response.latitude, longitude: response.longitude});
+                    }
+
+                }, function (error) {
+
                 }
-
-                else {
-                    return resolve({latitude: response.latitude, longitude: response.longitude});
-                }
-            })
+            )
         })
 
     }
 
     getLocationByCurrentPosition() {
+
+        let self = this;
 
         console.log('getLocationByCurrentPosition');
 
@@ -210,6 +224,7 @@ class App extends PureComponent {
                 resolve({latitude: position.coords.latitude, longitude: position.coords.longitude});
 
             }, function () {
+                // console.log('reject');
                 reject('Error: The Geolocation service failed.')
             });
 
@@ -231,8 +246,8 @@ class App extends PureComponent {
                     });
                     // alert('asd');
 
-                    const {ip} = this.state;
-                    // const ip = '37.73.134.205';
+                    // const {ip} = this.state;
+                    const ip = '37.73.134.205';
 
 
                     return fetch("http://api.ipstack.com/" + ip + "?access_key=7d397b1c07df95585a1bb05dd8ba894e")
@@ -255,26 +270,27 @@ class App extends PureComponent {
 
 
     setUserLocation() {
-
         let self = this;
 
         console.log('setUserLocation');
 
-
         return new Promise(function (resolve, reject) {
+            let setUserLocationReject = reject;
 
-            self.getLocation().then(response => {
-
-
-                console.log(response);
-
-                self.setState({
-                    location: response
-                }, function(){
-                    resolve();
-                });
-
-            })
+            self.getLocation().then(
+                response => {
+                    self.setState({
+                        location: response
+                    }, function () {
+                        resolve();
+                    });
+                },
+                reject => {
+                    console.log('location not found');
+                    setUserLocationReject(reject);
+                    // reject(reject);
+                }
+            )
 
         });
     }
@@ -285,8 +301,11 @@ class App extends PureComponent {
             setTimeout(() => {
                 this.setState({
                     stores: stores
+                }, function () {
+                    // console.log('Stores saved');
+                    // console.log(this.state);
+                    resolve("Stores loaded");
                 })
-                resolve("Stores loaded");
             }, 1000);
 
         })
