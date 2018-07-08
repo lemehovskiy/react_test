@@ -20,6 +20,8 @@ class App extends PureComponent {
         this.state = {
             error: null,
             dataLoaded: false,
+            userLocationSet: false,
+            storesLoaded: false,
             ip: null,
             location: {},
             myStore: null,
@@ -75,22 +77,6 @@ class App extends PureComponent {
 
         let filteredStores = this.state.stores;
 
-        // this.state.filters.forEach(function (filter) {
-        //     if (filter.val === null || filter.val === -1) return;
-        //
-        //     if (filter.name === 'distance') {
-        //         filteredStores = _.filter(filteredStores, function (item) {
-        //             return item.distance < filter.val
-        //         })
-        //     }
-        //
-        //     else if (filter.name === 'storeType') {
-        //         filteredStores = _.filter(filteredStores, function (item) {
-        //             return item.storeTypeID === filter.val
-        //         })
-        //     }
-        // })
-
         if (!(this.state.searchVal === null)) {
             filteredStores = filteredStores.filter(function (store) {
                 let searchStr = store.title.toLowerCase() + ' ' + store.address.toLowerCase() + ' ' + store.zip;
@@ -116,7 +102,10 @@ class App extends PureComponent {
 
         let storageData = this.getStorageData();
 
-        this.promiseArr.push(this.getStores());
+        this.getStores().then(result => {
+            console.log('loaded2');
+            }
+        )
 
         //check is storage exist
         if (storageData !== null) {
@@ -300,13 +289,13 @@ class App extends PureComponent {
         return new Promise((resolve, reject) => {
             setTimeout(() => {
                 this.setState({
-                    stores: stores
+                    stores: stores,
+                    storesLoaded: true
+
                 }, function () {
-                    // console.log('Stores saved');
-                    // console.log(this.state);
                     resolve("Stores loaded");
                 })
-            }, 1000);
+            }, 000);
 
         })
     }
