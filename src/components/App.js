@@ -18,6 +18,7 @@ class App extends PureComponent {
     constructor(props) {
         super(props);
         this.state = {
+            locationDetected: false,
             error: null,
             dataLoaded: false,
             ip: null,
@@ -116,59 +117,60 @@ class App extends PureComponent {
 
         let storageData = this.getStorageData();
 
-        this.promiseArr.push(this.getStores());
 
-        //check is storage exist
-        if (storageData !== null) {
-            this.pullFromStorage();
+        let setUserLocationResolve = function (resolve){
+            console.log('setUserLocationPromise response');
 
-            //check if location in storage is empty
-            if (storageData.location.latitude === null || storageData.location.longitude === null) {
-                this.promiseArr.push(this.setUserLocation())
+            this.setStoreDistance();
+            this.sortStoreByDistance();
+            this.initFilteredStores();
+
+            if (!this.state.userForceCheckStore) {
+                this.setMyStore(this.state.stores[0].id);
             }
+
+            this.setState({
+                dataLoaded: true
+            })
+
+            this.pushToStorage();
         }
 
-        // if storage empty - get location
-        else {
-            this.promiseArr.push(this.setUserLocation())
+        let setUserLocationReject = function(reject){
+            console.log('setUserLocationPromise error');
+
+            this.initFilteredStores();
+            this.setMyStore(this.state.stores[0].id);
+
+            this.setState({
+                dataLoaded: true
+            })
         }
 
-
-        // console.log('1');
-        //
-        // console.log(this.state)
-
-        Promise.all(this.promiseArr).then(
+        this.getStores().then(
             response => {
-                console.log('promiseAll');
+                console.log('getStores response');
 
-                this.setStoreDistance();
-                this.sortStoreByDistance();
-                this.initFilteredStores();
+                //check is storage exist
+                if (storageData !== null) {
+                    this.pullFromStorage();
 
-                if (!this.state.userForceCheckStore) {
-                    this.setMyStore(this.state.stores[0].id);
+                    //check if location in storage is empty
+                    if (storageData.location.latitude === null || storageData.location.longitude === null) {
+                        this.setUserLocation().then(setUserLocationResolve.bind(this), setUserLocationReject.bind(this));
+                    }
+                }
+                // if storage empty - get location
+                else {
+                    this.setUserLocation().then(setUserLocationResolve.bind(this), setUserLocationReject.bind(this));
                 }
 
-                this.setState({
-                    dataLoaded: true
-                })
-
-                this.pushToStorage();
             },
             error => {
-                console.log('asd');
-                console.log(error)
-                console.log(this.state);
+            }
+        )
 
-                this.initFilteredStores();
-                this.setMyStore(this.state.stores[0].id);
 
-                this.setState({
-                    dataLoaded: true
-                })
-
-            });
     }
 
 
@@ -312,7 +314,6 @@ class App extends PureComponent {
     }
 
     initFilteredStores() {
-
         this.setState({
             filteredStores: this.state.stores
         })
@@ -385,6 +386,8 @@ class App extends PureComponent {
     render() {
         const {error, dataLoaded, ip, location, distanceFilterVal} = this.state;
 
+        let storesOnMap = this.state.locationDetected ? this.state.filteredStores.slice(0, this.state.markerOffset) : this.state.filteredStores;
+
         if (error) {
             return <div>Error: {error.message}</div>;
         } else if (!dataLoaded) {
@@ -395,7 +398,7 @@ class App extends PureComponent {
 
                 <div>
                     <MapWithAMarker isMarkerShown={true}
-                                    stores={this.state.filteredStores.slice(0, this.state.markerOffset)}/>
+                                    stores={storesOnMap}/>
 
 
                     <div id="find-store-debug">
