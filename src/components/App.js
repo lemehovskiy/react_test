@@ -9,7 +9,7 @@ import 'react-select/dist/react-select.css';
 import MapWithAMarker from './GoogleMap';
 import Search from "./Search";
 
-
+var ReactDOM = require('react-dom');
 const _ = require('lodash');
 
 
@@ -29,7 +29,8 @@ class App extends PureComponent {
             filteredStores: [],
             userForceCheckStore: false,
             markerOffset: 2,
-            dealerListOffset: 2,
+            dealerListOffset: 3,
+            isLoadingMore: false,
 
 
             showMoreVal: 1,
@@ -117,6 +118,7 @@ class App extends PureComponent {
 
         let storageData = this.getStorageData();
 
+        window.addEventListener('scroll', this.handleScroll.bind(this));
 
         let setUserLocationResolve = function (resolve){
             console.log('setUserLocationPromise response');
@@ -220,6 +222,7 @@ class App extends PureComponent {
         console.log('getLocationByCurrentPosition');
 
         return new Promise(function (resolve, reject) {
+            reject('Error: The Geolocation service failed.')
 
             navigator.geolocation.getCurrentPosition(function (position) {
 
@@ -382,6 +385,24 @@ class App extends PureComponent {
         })
     }
 
+    handleScroll(){
+        // console.log(window.scrollY);
+        if (this.state.isLoadingMore) return;
+
+        let trigger = ReactDOM.findDOMNode(this.refs['StoreList']).getBoundingClientRect().bottom - window.innerHeight;
+
+        let bottomDistance = trigger - 20;
+
+        // console.log(offset);
+        if (bottomDistance < 0){
+           this.setState({
+               dealerListOffset: this.state.dealerListOffset + this.state.showMoreVal
+           })
+        }
+
+
+        // return target.scrollTop + clientHeight >= 0.8 * target.scrollHeight;
+    }
 
     render() {
         const {error, dataLoaded, ip, location, distanceFilterVal} = this.state;
@@ -425,6 +446,7 @@ class App extends PureComponent {
 
 
                     <StoreList
+                        ref="StoreList"
                         stores={this.state.filteredStores.slice(0, this.state.dealerListOffset)}
                         activeStoreID={this.state.myStore.id}
                         onMakeMyStoreClick={this.onMakeMyStoreClick.bind(this)}

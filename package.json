@@ -14,8 +14,6 @@
     "lodash": "^4.17.10",
     "node-sass": "^4.7.2",
     "postcss-loader": "^2.0.9",
-    "react": "^16.3.2",
-    "react-dom": "^16.3.2",
     "react-scripts": "1.1.4",
     "resolve-url-loader": "^2.2.1",
     "sass-loader": "^6.0.6",
@@ -30,6 +28,8 @@
   },
   "devDependencies": {
     "babel-preset-stage-2": "^6.24.1",
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1",
     "react-google-maps": "^9.4.5",
     "react-select": "^1.2.1",
     "recompose": "^0.27.1"
